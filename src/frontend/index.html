@@ -144,7 +144,7 @@
   .hero p {
     font-size: 1.05rem;
     color: var(--text-dim);
-    max-width: 500px;
+    max-width: 560px;
     margin: 0 auto;
     line-height: 1.6;
   }
@@ -519,7 +519,10 @@
   <section class="hero">
     <div class="hero-badge"><span class="pulse"></span> AI-Powered Analysis</div>
     <h1>Perfect your <em>form</em>,<br>prevent injury</h1>
-    <p>Record yourself performing exercises and get real-time form feedback. Just say the exercise name to begin.</p>
+    <p>
+      Record yourself performing exercises and get real-time form feedback.
+      Say an exercise name or a command like “start camera”, “start recording”, or “stop listening”.
+    </p>
   </section>
 
   <div class="grid">
@@ -570,7 +573,11 @@
         <span class="mic-status" id="micStatus">Tap to start listening</span>
       </div>
       <p style="font-size:0.78rem;color:var(--text-dim);text-align:center;margin-top:8px;">
-        Say an exercise name like <span style="color:var(--text);">"squat"</span>, <span style="color:var(--text);">"lunge"</span>, or <span style="color:var(--text);">"shoulder press"</span>
+        Try:
+        <span style="color:var(--text);">"squat"</span>,
+        <span style="color:var(--text);">"start camera"</span>,
+        <span style="color:var(--text);">"start recording"</span>,
+        <span style="color:var(--text);">"stop listening"</span>
       </p>
     </div>
 
@@ -616,10 +623,30 @@
   let recordedChunks = [];
   let timerInterval = null;
   let seconds = 0;
+
   let isListening = false;
   let recognition = null;
   let finalTranscript = '';
   let facingMode = 'user';
+
+  // App-level state (useful later when you hook up a backend agent)
+  let appState = {
+    exercise: null,
+    cameraOn: false,
+    recordingOn: false,
+  };
+
+  // ===== "ACTION SURFACE" (maps cleanly to future FunctionGemma tool calls) =====
+  const ACTIONS = {
+    SET_EXERCISE: "set_exercise",
+    START_CAMERA: "start_camera",
+    STOP_CAMERA: "stop_camera",
+    START_RECORDING: "start_recording",
+    STOP_RECORDING: "stop_recording",
+    RESET_TRANSCRIPT: "reset_transcript",
+    STOP_LISTENING: "stop_listening",
+    SPEAK: "speak",
+  };
 
   // ===== KNOWN EXERCISES =====
   const exercises = [
@@ -646,12 +673,15 @@
     if (cameraStream) {
       cameraStream.getTracks().forEach(t => t.stop());
       cameraStream = null;
+      appState.cameraOn = false;
+
       video.style.display = 'none';
       placeholder.style.display = '';
       overlay.classList.remove('active');
       flipBtn.style.display = 'none';
       btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg> Start Camera`;
       statusDot.classList.remove('on');
+
       if (isRecording) toggleRecording();
       return;
     }
@@ -661,6 +691,9 @@
         video: { facingMode, width: { ideal: 1280 }, height: { ideal: 720 } },
         audio: false
       });
+
+      appState.cameraOn = true;
+
       video.srcObject = cameraStream;
       video.style.display = 'block';
       placeholder.style.display = 'none';
@@ -678,6 +711,7 @@
     if (cameraStream) {
       cameraStream.getTracks().forEach(t => t.stop());
       cameraStream = null;
+      appState.cameraOn = false;
       await toggleCamera();
     }
   }
@@ -698,6 +732,7 @@
       } catch {
         mediaRecorder = new MediaRecorder(cameraStream);
       }
+
       mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
       mediaRecorder.onstop = () => {
         const blob = new Blob(recordedChunks, { type: 'video/webm' });
@@ -707,11 +742,15 @@
         a.download = `formcheck-${Date.now()}.webm`;
         a.click();
       };
+
       mediaRecorder.start();
       isRecording = true;
+      appState.recordingOn = true;
+
       seconds = 0;
       updateTimer();
       timerInterval = setInterval(() => { seconds++; updateTimer(); }, 1000);
+
       btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>`;
       indicator.classList.add('active');
       timerEl.classList.add('active');
@@ -719,7 +758,10 @@
     } else {
       mediaRecorder.stop();
       isRecording = false;
+      appState.recordingOn = false;
+
       clearInterval(timerInterval);
+
       btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="7"/></svg>`;
       indicator.classList.remove('active');
       timerEl.classList.remove('active');
@@ -747,9 +789,10 @@
       let interim = '';
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const t = event.results[i][0].transcript;
+
         if (event.results[i].isFinal) {
           finalTranscript += t + ' ';
-          detectExercise(t);
+          handleFinalUtterance(t); // <-- NEW: voice -> actions
         } else {
           interim += t;
         }
@@ -763,6 +806,7 @@
     };
 
     recog.onend = () => {
+      // only auto-restart while listening is still enabled
       if (isListening) recog.start();
     };
 
@@ -790,13 +834,31 @@
       micStatus.classList.add('active');
       statusDot.classList.add('on');
     } else {
-      recognition.stop();
+      // IMPORTANT: set false BEFORE stop so onend won't restart
       isListening = false;
+      recognition.stop();
       micBtn.classList.remove('listening');
       micStatus.textContent = 'Tap to start listening';
       micStatus.classList.remove('active');
       statusDot.classList.remove('on');
     }
+  }
+
+  // stop listening from voice command
+  function stopListening() {
+    const micBtn = document.getElementById('micBtn');
+    const micStatus = document.getElementById('micStatus');
+    const statusDot = document.getElementById('statusMic');
+
+    if (!recognition || !isListening) return;
+
+    isListening = false;     // prevent auto-restart
+    recognition.stop();      // stop SR
+
+    micBtn.classList.remove('listening');
+    micStatus.textContent = 'Tap to start listening';
+    micStatus.classList.remove('active');
+    statusDot.classList.remove('on');
   }
 
   function updateTranscript(final, interim) {
@@ -806,17 +868,123 @@
     textEl.innerHTML = final + (interim ? `<span class="interim">${interim}</span>` : '');
   }
 
-  function detectExercise(text) {
-    const lower = text.toLowerCase().trim();
+  // ===== VOICE COMMAND ROUTER =====
+  function handleFinalUtterance(text) {
+    const u = text.toLowerCase().trim();
+
+    // Stop listening (voice)
+    if (u.includes("stop listening")) {
+      return runActions([
+        { type: ACTIONS.SPEAK, text: "Okay. Stopping listening." },
+        { type: ACTIONS.STOP_LISTENING }
+      ]);
+    }
+
+    // Camera control
+    if (u.includes("start camera")) {
+      return runActions([
+        { type: ACTIONS.START_CAMERA },
+        { type: ACTIONS.SPEAK, text: "Starting camera." }
+      ]);
+    }
+
+    if (u.includes("stop camera")) {
+      return runActions([
+        { type: ACTIONS.STOP_CAMERA },
+        { type: ACTIONS.SPEAK, text: "Stopping camera." }
+      ]);
+    }
+
+    // Recording control
+    if (u.includes("start recording") || u === "record" || u.includes("record video")) {
+      return runActions([
+        { type: ACTIONS.START_RECORDING },
+        { type: ACTIONS.SPEAK, text: "Recording started." }
+      ]);
+    }
+
+    if (u.includes("stop recording") || u === "stop") {
+      return runActions([
+        { type: ACTIONS.STOP_RECORDING },
+        { type: ACTIONS.SPEAK, text: "Recording stopped." }
+      ]);
+    }
+
+    // Transcript control
+    if (u.includes("reset transcript") || u.includes("clear transcript")) {
+      finalTranscript = "";
+      updateTranscript("", "");
+      return runActions([{ type: ACTIONS.SPEAK, text: "Transcript cleared." }]);
+    }
+
+    // Exercise selection
+    const ex = findExercise(u);
+    if (ex) {
+      appState.exercise = ex;
+      return runActions([
+        { type: ACTIONS.SET_EXERCISE, exercise: ex },
+        { type: ACTIONS.SPEAK, text: `Okay. ${prettyExercise(ex)} selected.` }
+      ]);
+    }
+  }
+
+  function findExercise(utterance) {
     for (const ex of exercises) {
-      if (lower.includes(ex)) {
-        const detected = document.getElementById('exerciseDetected');
-        const name = document.getElementById('exerciseName');
-        name.textContent = ex.charAt(0).toUpperCase() + ex.slice(1);
-        detected.classList.add('active');
-        return;
+      if (utterance.includes(ex)) return ex;
+    }
+    return null;
+  }
+
+  function prettyExercise(ex) {
+    return ex.split(" ").map(w => w ? (w[0].toUpperCase() + w.slice(1)) : w).join(" ");
+  }
+
+  function runActions(actions) {
+    for (const a of actions) {
+      switch (a.type) {
+        case ACTIONS.SET_EXERCISE: {
+          const detected = document.getElementById('exerciseDetected');
+          const name = document.getElementById('exerciseName');
+          name.textContent = prettyExercise(a.exercise);
+          detected.classList.add('active');
+          break;
+        }
+        case ACTIONS.START_CAMERA: {
+          if (!cameraStream) toggleCamera();
+          break;
+        }
+        case ACTIONS.STOP_CAMERA: {
+          if (cameraStream) toggleCamera();
+          break;
+        }
+        case ACTIONS.START_RECORDING: {
+          if (cameraStream && !isRecording) toggleRecording();
+          break;
+        }
+        case ACTIONS.STOP_RECORDING: {
+          if (isRecording) toggleRecording();
+          break;
+        }
+        case ACTIONS.STOP_LISTENING: {
+          stopListening();
+          break;
+        }
+        case ACTIONS.SPEAK: {
+          speak(a.text);
+          break;
+        }
       }
     }
+  }
+
+  // ===== TTS (voice output) =====
+  function speak(text) {
+    if (!("speechSynthesis" in window)) return;
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 1.0;
+    u.pitch = 1.0;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
   }
 </script>
 
