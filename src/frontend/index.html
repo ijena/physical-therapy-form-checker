@@ -208,6 +208,7 @@
     height: 100%;
     object-fit: cover;
     display: none;
+    transform: scaleX(-1);
   }
 
   .video-placeholder {
@@ -224,6 +225,39 @@
 
   .video-placeholder p {
     font-size: 0.85rem;
+  }
+
+  /* Countdown overlay (NEW) */
+  .countdown-overlay {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10, 11, 13, 0.35);
+    backdrop-filter: blur(6px);
+    z-index: 6;
+    user-select: none;
+  }
+  .countdown-overlay.active { display: flex; }
+  .countdown-number {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(4rem, 10vw, 7rem);
+    letter-spacing: -0.03em;
+    color: var(--text);
+    text-shadow: 0 0 24px rgba(0,0,0,0.6);
+  }
+  .countdown-sub {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.85rem;
+    color: rgba(232,233,237,0.85);
+    background: rgba(0,0,0,0.35);
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.08);
   }
 
   /* Camera overlay UI */
@@ -341,6 +375,7 @@
     display: flex;
     gap: 10px;
     margin-top: 16px;
+    flex-wrap: wrap;
   }
 
   /* VOICE CARD */
@@ -388,6 +423,33 @@
   }
 
   .mic-status.active { color: var(--accent); }
+
+  /* Dropdown (NEW) */
+  .field {
+    margin-top: 16px;
+  }
+  .field-label {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+  .select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    outline: none;
+  }
+  .select:focus {
+    border-color: var(--accent-dim);
+    box-shadow: 0 0 0 8px var(--accent-glow);
+  }
 
   /* TRANSCRIPT CARD */
   .transcript-card {}
@@ -520,7 +582,7 @@
     <h1>Perfect your <em>form</em>,<br>prevent injury</h1>
     <p>
       Record yourself performing exercises and get real-time form feedback.
-      Say an exercise name or a command like “start camera”, “start recording”, or “stop listening”.
+      Say “start camera”, “start recording”, or “stop listening”. You can also pick an exercise from the dropdown.
     </p>
   </section>
 
@@ -533,38 +595,51 @@
       </div>
       <div class="video-container">
         <video id="cameraFeed" autoplay muted playsinline></video>
+
+        <!-- NEW: Countdown Overlay -->
+        <div class="countdown-overlay" id="countdownOverlay" aria-hidden="true">
+          <div class="countdown-number" id="countdownNumber">3</div>
+          <div class="countdown-sub">Recording starts in…</div>
+        </div>
+
         <div class="video-placeholder" id="videoPlaceholder">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
           <p>Camera feed will appear here</p>
         </div>
+
         <div class="recording-indicator" id="recIndicator">
           <span class="rec-dot"></span> REC
         </div>
         <div class="timer" id="timer">00:00</div>
+
         <div class="camera-overlay" id="cameraOverlay">
-          <button class="btn btn-danger btn-icon" id="btnRecord" title="Start Recording" onclick="toggleRecording()">
+          <button class="btn btn-danger btn-icon" id="btnRecord" title="Start/Stop Recording" onclick="toggleRecording()">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="7"/></svg>
           </button>
         </div>
       </div>
+
       <div class="video-actions">
         <button class="btn btn-primary" id="btnStartCamera" onclick="toggleCamera()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
           Start Camera
         </button>
+
         <button class="btn btn-ghost" id="btnFlip" onclick="flipCamera()" style="display:none">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
           Flip
         </button>
+
+        <!-- NEW: Record Again -->
         <button class="btn btn-ghost" id="btnRecordAgain" onclick="recordAgain()" style="display:none">
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <path d="M1 4v6h6"/>
-    <path d="M23 20v-6h-6"/>
-    <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10"/>
-    <path d="M22 14l-4.64 4.36A9 9 0 0 1 3.51 15"/>
-  </svg>
-  Record Again
-</button>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12a9 9 0 0 1 15.36-6.36L21 8"/>
+            <path d="M21 3v5h-5"/>
+            <path d="M21 12a9 9 0 0 1-15.36 6.36L3 16"/>
+            <path d="M3 21v-5h5"/>
+          </svg>
+          Record Again
+        </button>
       </div>
     </div>
 
@@ -574,19 +649,31 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
         Voice Command
       </div>
+
       <div class="mic-area">
         <button class="mic-btn" id="micBtn" onclick="toggleMic()">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
         </button>
         <span class="mic-status" id="micStatus">Tap to start listening</span>
       </div>
+
       <p style="font-size:0.78rem;color:var(--text-dim);text-align:center;margin-top:8px;">
         Try:
-        <span style="color:var(--text);">"squat"</span>,
         <span style="color:var(--text);">"start camera"</span>,
         <span style="color:var(--text);">"start recording"</span>,
+        <span style="color:var(--text);">"record again"</span>,
         <span style="color:var(--text);">"stop listening"</span>
       </p>
+
+      <!-- NEW: Dropdown for Squat + Lunge -->
+      <div class="field">
+        <label class="field-label" for="exerciseSelect">Exercise</label>
+        <select class="select" id="exerciseSelect" onchange="onExerciseSelectChange()">
+          <option value="">Select exercise…</option>
+          <option value="squat">Squat</option>
+          <option value="lunge">Lunge</option>
+        </select>
+      </div>
     </div>
 
     <!-- TRANSCRIPT CARD -->
@@ -637,26 +724,32 @@
   let finalTranscript = '';
   let facingMode = 'user';
 
-  // App-level state (useful later when you hook up a backend agent)
+  // Countdown state (NEW)
+  let countdownActive = false;
+  let countdownInterval = null;
+  let countdownValue = 3;
+
+  // App-level state
   let appState = {
     exercise: null,
     cameraOn: false,
     recordingOn: false,
   };
 
-  // ===== "ACTION SURFACE" (maps cleanly to future FunctionGemma tool calls) =====
+  // ===== "ACTION SURFACE" =====
   const ACTIONS = {
     SET_EXERCISE: "set_exercise",
     START_CAMERA: "start_camera",
     STOP_CAMERA: "stop_camera",
     START_RECORDING: "start_recording",
     STOP_RECORDING: "stop_recording",
+    RECORD_AGAIN: "record_again",
     RESET_TRANSCRIPT: "reset_transcript",
     STOP_LISTENING: "stop_listening",
     SPEAK: "speak",
   };
 
-  // ===== KNOWN EXERCISES =====
+  // ===== KNOWN EXERCISES (keep full list for voice detection) =====
   const exercises = [
     'squat', 'squats', 'lunge', 'lunges', 'deadlift', 'deadlifts',
     'shoulder press', 'overhead press', 'push up', 'push ups', 'pushup', 'pushups',
@@ -669,6 +762,36 @@
     'quad set', 'bridge', 'bridges', 'side lying hip abduction'
   ];
 
+  // ===== Helpers =====
+  function canonicalExercise(ex) {
+    if (!ex) return null;
+    const e = ex.toLowerCase().trim();
+    if (e === "squats") return "squat";
+    if (e === "lunges") return "lunge";
+    return e;
+  }
+
+  function prettyExercise(ex) {
+    return ex.split(" ").map(w => w ? (w[0].toUpperCase() + w.slice(1)) : w).join(" ");
+  }
+
+  function setExerciseUI(ex) {
+    const canonical = canonicalExercise(ex);
+    appState.exercise = canonical;
+
+    const detected = document.getElementById('exerciseDetected');
+    const name = document.getElementById('exerciseName');
+    name.textContent = prettyExercise(canonical);
+    detected.classList.add('active');
+
+    // Sync dropdown if it has the exercise (Squat/Lunge only)
+    const sel = document.getElementById('exerciseSelect');
+    if (sel) {
+      if (canonical === "squat" || canonical === "lunge") sel.value = canonical;
+      else sel.value = ""; // keep dropdown clean if voice picks other exercises
+    }
+  }
+
   // ===== CAMERA =====
   async function toggleCamera() {
     const btn = document.getElementById('btnStartCamera');
@@ -677,8 +800,12 @@
     const overlay = document.getElementById('cameraOverlay');
     const flipBtn = document.getElementById('btnFlip');
     const statusDot = document.getElementById('statusCamera');
+    const recordAgainBtn = document.getElementById('btnRecordAgain');
 
     if (cameraStream) {
+      // stop any countdown too
+      cancelCountdown();
+
       cameraStream.getTracks().forEach(t => t.stop());
       cameraStream = null;
       appState.cameraOn = false;
@@ -687,10 +814,12 @@
       placeholder.style.display = '';
       overlay.classList.remove('active');
       flipBtn.style.display = 'none';
+      recordAgainBtn.style.display = 'none';
+
       btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg> Start Camera`;
       statusDot.classList.remove('on');
 
-      if (isRecording) toggleRecording();
+      if (isRecording) stopRecording();
       return;
     }
 
@@ -707,6 +836,8 @@
       placeholder.style.display = 'none';
       overlay.classList.add('active');
       flipBtn.style.display = '';
+      recordAgainBtn.style.display = ''; // NEW
+
       btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Stop Camera`;
       statusDot.classList.add('on');
     } catch (err) {
@@ -724,117 +855,151 @@
     }
   }
 
-  // ===== RECORDING =====
+  // ===== RECORDING (with 3-2-1 countdown) =====
   function toggleRecording() {
+    // If countdown is running, treat "toggle" as cancel/stop.
+    if (countdownActive && !isRecording) {
+      cancelCountdown();
+      speak("Cancelled.");
+      return;
+    }
+
+    if (!isRecording) startRecordingWithCountdown();
+    else stopRecording();
+  }
+
+  function recordAgain() {
+    if (!cameraStream) {
+      speak("Start the camera first.");
+      return;
+    }
+    if (countdownActive || isRecording) return;
+    startRecordingWithCountdown();
+  }
+
+  function startRecordingWithCountdown() {
+    if (!cameraStream || isRecording || countdownActive) return;
+
+    countdownActive = true;
+    countdownValue = 3;
+
+    const overlay = document.getElementById('countdownOverlay');
+    const number = document.getElementById('countdownNumber');
+    overlay.classList.add('active');
+    number.textContent = String(countdownValue);
+
+    // disable record-again while counting down
+    const recordAgainBtn = document.getElementById('btnRecordAgain');
+    recordAgainBtn.disabled = true;
+    recordAgainBtn.style.opacity = "0.6";
+
+    countdownInterval = setInterval(() => {
+      countdownValue -= 1;
+      if (countdownValue <= 0) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+        overlay.classList.remove('active');
+        countdownActive = false;
+
+        recordAgainBtn.disabled = false;
+        recordAgainBtn.style.opacity = "1";
+
+        startRecording(); // actual record starts AFTER 3-2-1
+      } else {
+        number.textContent = String(countdownValue);
+      }
+    }, 1000);
+  }
+
+  function cancelCountdown() {
+    if (!countdownActive) return;
+    countdownActive = false;
+    if (countdownInterval) clearInterval(countdownInterval);
+    countdownInterval = null;
+
+    const overlay = document.getElementById('countdownOverlay');
+    overlay.classList.remove('active');
+
+    const recordAgainBtn = document.getElementById('btnRecordAgain');
+    recordAgainBtn.disabled = false;
+    recordAgainBtn.style.opacity = "1";
+  }
+
+  function startRecording() {
     const btn = document.getElementById('btnRecord');
     const indicator = document.getElementById('recIndicator');
     const timerEl = document.getElementById('timer');
     const statusDot = document.getElementById('statusRec');
 
-    if (!cameraStream) return;
+    if (!cameraStream || isRecording) return;
 
-    if (!isRecording) {
-      recordedChunks = [];
-      try {
-        mediaRecorder = new MediaRecorder(cameraStream, { mimeType: 'video/webm' });
-      } catch {
-        mediaRecorder = new MediaRecorder(cameraStream);
-      }
-
-      mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
- mediaRecorder.onstop = () => {
-  const video = document.getElementById('cameraFeed');
-  const overlay = document.getElementById('cameraOverlay');
-  const recordAgainBtn = document.getElementById('btnRecordAgain');
-
-  // Clean up old preview URL (avoid memory leak)
-  if (window.lastRecordingUrl) URL.revokeObjectURL(window.lastRecordingUrl);
-
-  const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType || 'video/webm' });
-  const url = URL.createObjectURL(blob);
-
-  // Show preview
-  video.srcObject = null;
-  video.src = url;
-  video.controls = true;
-  video.loop = true;
-  video.muted = true;
-  video.playsInline = true;
-
-  // IMPORTANT: preview not mirrored
-  video.style.transform = 'none';
-
-  video.play().catch(() => {});
-
-  // Save for analysis
-  window.lastRecordingBlob = blob;
-  window.lastRecordingUrl = url;
-
-  // Hide record overlay, show "Record Again"
-  overlay.classList.remove('active');
-  recordAgainBtn.style.display = 'inline-flex';
-};;
-      mediaRecorder.start();
-      isRecording = true;
-      appState.recordingOn = true;
-
-      seconds = 0;
-      updateTimer();
-      timerInterval = setInterval(() => { seconds++; updateTimer(); }, 1000);
-
-      btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>`;
-      indicator.classList.add('active');
-      timerEl.classList.add('active');
-      statusDot.classList.add('on');
-    } else {
-      mediaRecorder.stop();
-      isRecording = false;
-      appState.recordingOn = false;
-
-      clearInterval(timerInterval);
-
-      btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="7"/></svg>`;
-      indicator.classList.remove('active');
-      timerEl.classList.remove('active');
-      statusDot.classList.remove('on');
+    recordedChunks = [];
+    try {
+      mediaRecorder = new MediaRecorder(cameraStream, { mimeType: 'video/webm' });
+    } catch {
+      mediaRecorder = new MediaRecorder(cameraStream);
     }
+
+    mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
+    mediaRecorder.onstop = () => {
+      const blob = new Blob(recordedChunks, { type: 'video/webm' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `formcheck-${Date.now()}.webm`;
+      a.click();
+    };
+
+    mediaRecorder.start();
+    isRecording = true;
+    appState.recordingOn = true;
+
+    seconds = 0;
+    updateTimer();
+    timerInterval = setInterval(() => { seconds++; updateTimer(); }, 1000);
+
+    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>`;
+    indicator.classList.add('active');
+    timerEl.classList.add('active');
+    statusDot.classList.add('on');
   }
-  function recordAgain() {
-  const video = document.getElementById('cameraFeed');
-  const overlay = document.getElementById('cameraOverlay');
-  const recordAgainBtn = document.getElementById('btnRecordAgain');
 
-  if (!cameraStream) return;
+  function stopRecording() {
+    const btn = document.getElementById('btnRecord');
+    const indicator = document.getElementById('recIndicator');
+    const timerEl = document.getElementById('timer');
+    const statusDot = document.getElementById('statusRec');
 
-  // cleanup old preview url
-  if (window.lastRecordingUrl) {
-    URL.revokeObjectURL(window.lastRecordingUrl);
-    window.lastRecordingUrl = null;
+    if (!isRecording) return;
+
+    mediaRecorder.stop();
+    isRecording = false;
+    appState.recordingOn = false;
+
+    clearInterval(timerInterval);
+
+    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="7"/></svg>`;
+    indicator.classList.remove('active');
+    timerEl.classList.remove('active');
+    statusDot.classList.remove('on');
   }
-  window.lastRecordingBlob = null;
-
-  // remove playback source
-  video.pause();
-  video.removeAttribute('src');
-  video.load();
-
-  // return to live stream
-  video.controls = false;
-  video.srcObject = cameraStream;
-
-  // mirror live preview again
-  video.style.transform = 'none';
-
-  overlay.classList.add('active');
-  recordAgainBtn.style.display = 'none';
-
-  video.play().catch(() => {});
-}
 
   function updateTimer() {
     const m = String(Math.floor(seconds / 60)).padStart(2, '0');
     const s = String(seconds % 60).padStart(2, '0');
     document.getElementById('timer').textContent = `${m}:${s}`;
+  }
+
+  // ===== DROPDOWN (NEW) =====
+  function onExerciseSelectChange() {
+    const sel = document.getElementById("exerciseSelect");
+    const val = sel.value;
+    if (!val) return;
+
+    runActions([
+      { type: ACTIONS.SET_EXERCISE, exercise: val },
+      { type: ACTIONS.SPEAK, text: `Okay. ${prettyExercise(val)} selected.` }
+    ]);
   }
 
   // ===== SPEECH RECOGNITION =====
@@ -854,7 +1019,7 @@
 
         if (event.results[i].isFinal) {
           finalTranscript += t + ' ';
-          handleFinalUtterance(t); // <-- NEW: voice -> actions
+          handleFinalUtterance(t);
         } else {
           interim += t;
         }
@@ -868,7 +1033,6 @@
     };
 
     recog.onend = () => {
-      // only auto-restart while listening is still enabled
       if (isListening) recog.start();
     };
 
@@ -896,8 +1060,7 @@
       micStatus.classList.add('active');
       statusDot.classList.add('on');
     } else {
-      // IMPORTANT: set false BEFORE stop so onend won't restart
-      isListening = false;
+      isListening = false; // prevent auto-restart
       recognition.stop();
       micBtn.classList.remove('listening');
       micStatus.textContent = 'Tap to start listening';
@@ -906,7 +1069,6 @@
     }
   }
 
-  // stop listening from voice command
   function stopListening() {
     const micBtn = document.getElementById('micBtn');
     const micStatus = document.getElementById('micStatus');
@@ -915,7 +1077,7 @@
     if (!recognition || !isListening) return;
 
     isListening = false;     // prevent auto-restart
-    recognition.stop();      // stop SR
+    recognition.stop();
 
     micBtn.classList.remove('listening');
     micStatus.textContent = 'Tap to start listening';
@@ -931,10 +1093,16 @@
   }
 
   // ===== VOICE COMMAND ROUTER =====
+  function findExercise(utterance) {
+    for (const ex of exercises) {
+      if (utterance.includes(ex)) return ex;
+    }
+    return null;
+  }
+
   function handleFinalUtterance(text) {
     const u = text.toLowerCase().trim();
 
-    // Stop listening (voice)
     if (u.includes("stop listening")) {
       return runActions([
         { type: ACTIONS.SPEAK, text: "Okay. Stopping listening." },
@@ -942,7 +1110,6 @@
       ]);
     }
 
-    // Camera control
     if (u.includes("start camera")) {
       return runActions([
         { type: ACTIONS.START_CAMERA },
@@ -957,11 +1124,18 @@
       ]);
     }
 
-    // Recording control
+    // NEW: record again voice command
+    if (u.includes("record again")) {
+      return runActions([
+        { type: ACTIONS.RECORD_AGAIN },
+        { type: ACTIONS.SPEAK, text: "Okay. Recording again." }
+      ]);
+    }
+
     if (u.includes("start recording") || u === "record" || u.includes("record video")) {
       return runActions([
         { type: ACTIONS.START_RECORDING },
-        { type: ACTIONS.SPEAK, text: "Recording started." }
+        { type: ACTIONS.SPEAK, text: "Starting recording." }
       ]);
     }
 
@@ -972,43 +1146,27 @@
       ]);
     }
 
-    // Transcript control
     if (u.includes("reset transcript") || u.includes("clear transcript")) {
       finalTranscript = "";
       updateTranscript("", "");
       return runActions([{ type: ACTIONS.SPEAK, text: "Transcript cleared." }]);
     }
 
-    // Exercise selection
     const ex = findExercise(u);
     if (ex) {
-      appState.exercise = ex;
+      const canonical = canonicalExercise(ex);
       return runActions([
-        { type: ACTIONS.SET_EXERCISE, exercise: ex },
-        { type: ACTIONS.SPEAK, text: `Okay. ${prettyExercise(ex)} selected.` }
+        { type: ACTIONS.SET_EXERCISE, exercise: canonical },
+        { type: ACTIONS.SPEAK, text: `Okay. ${prettyExercise(canonical)} selected.` }
       ]);
     }
-  }
-
-  function findExercise(utterance) {
-    for (const ex of exercises) {
-      if (utterance.includes(ex)) return ex;
-    }
-    return null;
-  }
-
-  function prettyExercise(ex) {
-    return ex.split(" ").map(w => w ? (w[0].toUpperCase() + w.slice(1)) : w).join(" ");
   }
 
   function runActions(actions) {
     for (const a of actions) {
       switch (a.type) {
         case ACTIONS.SET_EXERCISE: {
-          const detected = document.getElementById('exerciseDetected');
-          const name = document.getElementById('exerciseName');
-          name.textContent = prettyExercise(a.exercise);
-          detected.classList.add('active');
+          setExerciseUI(a.exercise);
           break;
         }
         case ACTIONS.START_CAMERA: {
@@ -1020,11 +1178,17 @@
           break;
         }
         case ACTIONS.START_RECORDING: {
-          if (cameraStream && !isRecording) toggleRecording();
+          if (cameraStream && !isRecording && !countdownActive) startRecordingWithCountdown();
           break;
         }
         case ACTIONS.STOP_RECORDING: {
-          if (isRecording) toggleRecording();
+          // If we’re counting down, cancel it; else stop recording.
+          if (countdownActive && !isRecording) cancelCountdown();
+          else if (isRecording) stopRecording();
+          break;
+        }
+        case ACTIONS.RECORD_AGAIN: {
+          recordAgain();
           break;
         }
         case ACTIONS.STOP_LISTENING: {
@@ -1039,7 +1203,7 @@
     }
   }
 
-  // ===== TTS (voice output) =====
+  // ===== TTS =====
   function speak(text) {
     if (!("speechSynthesis" in window)) return;
     const u = new SpeechSynthesisUtterance(text);
