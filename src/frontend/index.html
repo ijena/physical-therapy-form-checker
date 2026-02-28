@@ -283,6 +283,33 @@
   }
 
   .timer.active { display: block; }
+  .countdown-overlay {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(72px, 10vw, 140px);
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 12px 35px rgba(0,0,0,0.6);
+
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(2px);
+}
+
+.countdown-overlay.active { display: flex; }
+
+.countdown-overlay.pop { animation: pop 0.35s ease-out; }
+
+@keyframes pop {
+  0%   { transform: scale(0.85); opacity: 0; }
+  45%  { transform: scale(1.1);  opacity: 1; }
+  100% { transform: scale(1.0);  opacity: 1; }
+}
 
   /* BUTTONS */
   .btn {
@@ -541,6 +568,7 @@
           <span class="rec-dot"></span> REC
         </div>
         <div class="timer" id="timer">00:00</div>
+        <div class="countdown-overlay" id="countdownOverlay"></div>
         <div class="camera-overlay" id="cameraOverlay">
           <button class="btn btn-danger btn-icon" id="btnRecord" title="Start Recording" onclick="toggleRecording()">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="7"/></svg>
@@ -723,82 +751,130 @@
       await toggleCamera();
     }
   }
+  function startCountdown(secondsToCount = 3) {
+  const overlay = document.getElementById('countdownOverlay');
+  const recIndicator = document.getElementById('recIndicator');
 
-  // ===== RECORDING =====
-  function toggleRecording() {
-    const btn = document.getElementById('btnRecord');
-    const indicator = document.getElementById('recIndicator');
-    const timerEl = document.getElementById('timer');
-    const statusDot = document.getElementById('statusRec');
+  // Hide REC while counting down
+  recIndicator.classList.remove('active');
 
-    if (!cameraStream) return;
+  overlay.classList.add('active');
 
-    if (!isRecording) {
-      recordedChunks = [];
-      try {
-        mediaRecorder = new MediaRecorder(cameraStream, { mimeType: 'video/webm' });
-      } catch {
-        mediaRecorder = new MediaRecorder(cameraStream);
+  return new Promise((resolve) => {
+    let remaining = secondsToCount;
+
+    const tick = () => {
+      overlay.textContent = remaining;
+
+      // restart pop animation
+      overlay.classList.remove('pop');
+      void overlay.offsetWidth;
+      overlay.classList.add('pop');
+
+      if (remaining === 1) {
+        setTimeout(() => {
+          overlay.classList.remove('active');
+          overlay.classList.remove('pop');
+          overlay.textContent = '';
+          resolve();
+        }, 1000);
+        return;
       }
 
-      mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
- mediaRecorder.onstop = () => {
-  const video = document.getElementById('cameraFeed');
-  const overlay = document.getElementById('cameraOverlay');
-  const recordAgainBtn = document.getElementById('btnRecordAgain');
+      remaining--;
+      setTimeout(tick, 1000);
+    };
 
-  // Clean up old preview URL (avoid memory leak)
-  if (window.lastRecordingUrl) URL.revokeObjectURL(window.lastRecordingUrl);
+    tick();
+  });
+}
+  // ===== RECORDING =====
+  async function toggleRecording() {
+  const btn = document.getElementById('btnRecord');
+  const indicator = document.getElementById('recIndicator');
+  const timerEl = document.getElementById('timer');
+  const statusDot = document.getElementById('statusRec');
 
-  const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType || 'video/webm' });
-  const url = URL.createObjectURL(blob);
+  if (!cameraStream) return;
 
-  // Show preview
-  video.srcObject = null;
-  video.src = url;
-  video.controls = true;
-  video.loop = true;
-  video.muted = true;
-  video.playsInline = true;
+  // STOP
+  if (isRecording) {
+    mediaRecorder.stop();
+    isRecording = false;
+    appState.recordingOn = false;
 
-  // IMPORTANT: preview not mirrored
-  video.style.transform = 'none';
+    clearInterval(timerInterval);
 
-  video.play().catch(() => {});
-
-  // Save for analysis
-  window.lastRecordingBlob = blob;
-  window.lastRecordingUrl = url;
-
-  // Hide record overlay, show "Record Again"
-  overlay.classList.remove('active');
-  recordAgainBtn.style.display = 'inline-flex';
-};;
-      mediaRecorder.start();
-      isRecording = true;
-      appState.recordingOn = true;
-
-      seconds = 0;
-      updateTimer();
-      timerInterval = setInterval(() => { seconds++; updateTimer(); }, 1000);
-
-      btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>`;
-      indicator.classList.add('active');
-      timerEl.classList.add('active');
-      statusDot.classList.add('on');
-    } else {
-      mediaRecorder.stop();
-      isRecording = false;
-      appState.recordingOn = false;
-
-      clearInterval(timerInterval);
-
-      btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="7"/></svg>`;
-      indicator.classList.remove('active');
-      timerEl.classList.remove('active');
-      statusDot.classList.remove('on');
-    }
+    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="7"/></svg>`;
+    indicator.classList.remove('active');
+    timerEl.classList.remove('active');
+    statusDot.classList.remove('on');
+    return;
   }
+  switchToLivePreview(); // ensures we’re not still playing the old blob
+  // START (countdown first)
+  btn.disabled = true;
+  await startCountdown(3);
+  btn.disabled = false;
+
+  recordedChunks = [];
+
+  try {
+    mediaRecorder = new MediaRecorder(cameraStream, { mimeType: 'video/webm' });
+  } catch {
+    mediaRecorder = new MediaRecorder(cameraStream);
+  }
+
+  mediaRecorder.ondataavailable = (e) => {
+    if (e.data.size > 0) recordedChunks.push(e.data);
+  };
+
+  mediaRecorder.onstop = () => {
+    const video = document.getElementById('cameraFeed');
+    const overlay = document.getElementById('cameraOverlay');
+    const recordAgainBtn = document.getElementById('btnRecordAgain');
+
+    // Clean up old preview URL
+    if (window.lastRecordingUrl) URL.revokeObjectURL(window.lastRecordingUrl);
+
+    const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType || 'video/webm' });
+    const url = URL.createObjectURL(blob);
+
+    // Show preview
+    video.srcObject = null;
+    video.src = url;
+    video.controls = true;
+    video.loop = true;
+    video.muted = true;
+    video.playsInline = true;
+    video.style.transform = 'none'; // never mirror
+
+    video.play().catch(() => {});
+
+    window.lastRecordingBlob = blob;
+    window.lastRecordingUrl = url;
+
+    // Hide record overlay, show Record Again
+    overlay.classList.remove('active');
+    recordAgainBtn.style.display = 'inline-flex';
+  };
+
+  mediaRecorder.start();
+  isRecording = true;
+  appState.recordingOn = true;
+
+  seconds = 0;
+  updateTimer();
+  timerInterval = setInterval(() => {
+    seconds++;
+    updateTimer();
+  }, 1000);
+
+  btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>`;
+  indicator.classList.add('active');
+  timerEl.classList.add('active');
+  statusDot.classList.add('on');
+}
   function recordAgain() {
   const video = document.getElementById('cameraFeed');
   const overlay = document.getElementById('cameraOverlay');
@@ -818,9 +894,9 @@
   video.removeAttribute('src');
   video.load();
 
-  // return to live stream
-  video.controls = false;
-  video.srcObject = cameraStream;
+  switchToLivePreview();
+overlay.classList.add('active');
+recordAgainBtn.style.display = 'none';
 
   // mirror live preview again
   video.style.transform = 'none';
@@ -836,6 +912,29 @@
     const s = String(seconds % 60).padStart(2, '0');
     document.getElementById('timer').textContent = `${m}:${s}`;
   }
+  function switchToLivePreview() {
+  const video = document.getElementById('cameraFeed');
+
+  if (!cameraStream) return;
+
+  // If a previous recording is loaded, clean it up
+  if (window.lastRecordingUrl) {
+    URL.revokeObjectURL(window.lastRecordingUrl);
+    window.lastRecordingUrl = null;
+  }
+  window.lastRecordingBlob = null;
+
+  // Clear playback source and return to camera stream
+  video.pause();
+  video.removeAttribute('src');   // removes blob url
+  video.load();                   // resets the media element
+
+  video.controls = false;
+  video.srcObject = cameraStream;
+  video.style.transform = 'none'; // never mirror
+
+  video.play().catch(() => {});
+}
 
   // ===== SPEECH RECOGNITION =====
   function initSpeechRecognition() {
