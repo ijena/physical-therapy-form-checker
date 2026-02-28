@@ -554,6 +554,15 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
           Flip
         </button>
+        <button class="btn btn-ghost" id="btnRecordAgain" onclick="recordAgain()" style="display:none">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M1 4v6h6"/>
+    <path d="M23 20v-6h-6"/>
+    <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10"/>
+    <path d="M22 14l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+  </svg>
+  Record Again
+</button>
       </div>
     </div>
 
@@ -699,14 +708,38 @@
         mediaRecorder = new MediaRecorder(cameraStream);
       }
       mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(recordedChunks, { type: 'video/webm' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `formcheck-${Date.now()}.webm`;
-        a.click();
-      };
+ mediaRecorder.onstop = () => {
+  const video = document.getElementById('cameraFeed');
+  const overlay = document.getElementById('cameraOverlay');
+  const recordAgainBtn = document.getElementById('btnRecordAgain');
+
+  // Clean up old preview URL (avoid memory leak)
+  if (window.lastRecordingUrl) URL.revokeObjectURL(window.lastRecordingUrl);
+
+  const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType || 'video/webm' });
+  const url = URL.createObjectURL(blob);
+
+  // Show preview
+  video.srcObject = null;
+  video.src = url;
+  video.controls = true;
+  video.loop = true;
+  video.muted = true;
+  video.playsInline = true;
+
+  // IMPORTANT: preview not mirrored
+  video.style.transform = 'none';
+
+  video.play().catch(() => {});
+
+  // Save for analysis
+  window.lastRecordingBlob = blob;
+  window.lastRecordingUrl = url;
+
+  // Hide record overlay, show "Record Again"
+  overlay.classList.remove('active');
+  recordAgainBtn.style.display = 'inline-flex';
+};;
       mediaRecorder.start();
       isRecording = true;
       seconds = 0;
@@ -726,6 +759,37 @@
       statusDot.classList.remove('on');
     }
   }
+  function recordAgain() {
+  const video = document.getElementById('cameraFeed');
+  const overlay = document.getElementById('cameraOverlay');
+  const recordAgainBtn = document.getElementById('btnRecordAgain');
+
+  if (!cameraStream) return;
+
+  // cleanup old preview url
+  if (window.lastRecordingUrl) {
+    URL.revokeObjectURL(window.lastRecordingUrl);
+    window.lastRecordingUrl = null;
+  }
+  window.lastRecordingBlob = null;
+
+  // remove playback source
+  video.pause();
+  video.removeAttribute('src');
+  video.load();
+
+  // return to live stream
+  video.controls = false;
+  video.srcObject = cameraStream;
+
+  // mirror live preview again
+  video.style.transform = 'scaleX(-1)';
+
+  overlay.classList.add('active');
+  recordAgainBtn.style.display = 'none';
+
+  video.play().catch(() => {});
+}
 
   function updateTimer() {
     const m = String(Math.floor(seconds / 60)).padStart(2, '0');
