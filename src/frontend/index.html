@@ -31,7 +31,6 @@
     overflow-x: hidden;
   }
 
-  /* Ambient background */
   body::before {
     content: '';
     position: fixed;
@@ -44,7 +43,6 @@
     z-index: 0;
   }
 
-  /* NAV */
   nav {
     position: fixed;
     top: 0;
@@ -88,7 +86,6 @@
   .nav-links li { cursor: pointer; transition: color 0.2s; }
   .nav-links li:hover { color: var(--text); }
 
-  /* MAIN CONTENT */
   main {
     position: relative;
     z-index: 1;
@@ -97,7 +94,6 @@
     padding: 120px 40px 60px;
   }
 
-  /* HERO */
   .hero {
     text-align: center;
     margin-bottom: 60px;
@@ -149,7 +145,6 @@
     line-height: 1.6;
   }
 
-  /* GRID LAYOUT */
   .grid {
     display: grid;
     grid-template-columns: 1.4fr 1fr;
@@ -157,7 +152,6 @@
     animation: fadeUp 0.8s ease-out 0.15s both;
   }
 
-  /* CARD BASE */
   .card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -183,7 +177,6 @@
 
   .card-label svg { opacity: 0.5; }
 
-  /* VIDEO CARD */
   .video-card {
     grid-row: span 2;
     display: flex;
@@ -208,7 +201,6 @@
     height: 100%;
     object-fit: cover;
     display: none;
-    transform: scaleX(-1);
   }
 
   .video-placeholder {
@@ -223,44 +215,8 @@
     margin-bottom: 12px;
   }
 
-  .video-placeholder p {
-    font-size: 0.85rem;
-  }
+  .video-placeholder p { font-size: 0.85rem; }
 
-  /* Countdown overlay (NEW) */
-  .countdown-overlay {
-    position: absolute;
-    inset: 0;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    background: rgba(10, 11, 13, 0.35);
-    backdrop-filter: blur(6px);
-    z-index: 6;
-    user-select: none;
-  }
-  .countdown-overlay.active { display: flex; }
-  .countdown-number {
-    font-family: 'Instrument Serif', serif;
-    font-size: clamp(4rem, 10vw, 7rem);
-    letter-spacing: -0.03em;
-    color: var(--text);
-    text-shadow: 0 0 24px rgba(0,0,0,0.6);
-  }
-  .countdown-sub {
-    position: absolute;
-    bottom: 18px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 0.85rem;
-    color: rgba(232,233,237,0.85);
-    background: rgba(0,0,0,0.35);
-    padding: 8px 12px;
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,0.08);
-  }
-
-  /* Camera overlay UI */
   .camera-overlay {
     position: absolute;
     bottom: 16px;
@@ -318,7 +274,34 @@
 
   .timer.active { display: block; }
 
-  /* BUTTONS */
+  /* Countdown overlay */
+  .countdown-overlay {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+
+    font-family: 'DM Sans', sans-serif;
+    font-size: clamp(72px, 10vw, 140px);
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 12px 35px rgba(0,0,0,0.6);
+
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(2px);
+  }
+
+  .countdown-overlay.active { display: flex; }
+  .countdown-overlay.pop { animation: pop 0.35s ease-out; }
+
+  @keyframes pop {
+    0%   { transform: scale(0.85); opacity: 0; }
+    45%  { transform: scale(1.1);  opacity: 1; }
+    100% { transform: scale(1.0);  opacity: 1; }
+  }
+
   .btn {
     display: inline-flex;
     align-items: center;
@@ -337,24 +320,11 @@
 
   .btn svg { flex-shrink: 0; }
 
-  .btn-primary {
-    background: var(--accent);
-    color: var(--bg);
-  }
+  .btn-primary { background: var(--accent); color: var(--bg); }
+  .btn-primary:hover { background: #5CF098; box-shadow: 0 0 30px var(--accent-glow); }
 
-  .btn-primary:hover {
-    background: #5CF098;
-    box-shadow: 0 0 30px var(--accent-glow);
-  }
-
-  .btn-danger {
-    background: var(--red);
-    color: #fff;
-  }
-
-  .btn-danger:hover {
-    box-shadow: 0 0 30px var(--red-glow);
-  }
+  .btn-danger { background: var(--red); color: #fff; }
+  .btn-danger:hover { box-shadow: 0 0 30px var(--red-glow); }
 
   .btn-ghost {
     background: var(--surface-2);
@@ -375,11 +345,7 @@
     display: flex;
     gap: 10px;
     margin-top: 16px;
-    flex-wrap: wrap;
   }
-
-  /* VOICE CARD */
-  .voice-card {}
 
   .mic-area {
     display: flex;
@@ -404,10 +370,7 @@
     position: relative;
   }
 
-  .mic-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
+  .mic-btn:hover { border-color: var(--accent); color: var(--accent); }
 
   .mic-btn.listening {
     border-color: var(--accent);
@@ -423,36 +386,6 @@
   }
 
   .mic-status.active { color: var(--accent); }
-
-  /* Dropdown (NEW) */
-  .field {
-    margin-top: 16px;
-  }
-  .field-label {
-    display: block;
-    font-size: 0.72rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 8px;
-  }
-  .select {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 12px 14px;
-    border-radius: 12px;
-    font-size: 0.9rem;
-    outline: none;
-  }
-  .select:focus {
-    border-color: var(--accent-dim);
-    box-shadow: 0 0 0 8px var(--accent-glow);
-  }
-
-  /* TRANSCRIPT CARD */
-  .transcript-card {}
 
   .transcript-box {
     background: var(--bg);
@@ -496,7 +429,6 @@
     color: var(--accent);
   }
 
-  /* STATUS BAR */
   .status-bar {
     margin-top: 20px;
     display: flex;
@@ -511,11 +443,7 @@
     animation: fadeUp 0.8s ease-out 0.3s both;
   }
 
-  .status-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
+  .status-item { display: flex; align-items: center; gap: 8px; }
 
   .status-dot {
     width: 6px;
@@ -525,12 +453,8 @@
     transition: background 0.3s, box-shadow 0.3s;
   }
 
-  .status-dot.on {
-    background: var(--accent);
-    box-shadow: 0 0 8px var(--accent-glow);
-  }
+  .status-dot.on { background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
 
-  /* ANIMATIONS */
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
@@ -546,11 +470,8 @@
     50% { box-shadow: 0 0 0 16px rgba(74,230,138,0.06); }
   }
 
-  @keyframes blink {
-    50% { border-color: transparent; }
-  }
+  @keyframes blink { 50% { border-color: transparent; } }
 
-  /* RESPONSIVE */
   @media (max-width: 768px) {
     nav { padding: 16px 20px; }
     main { padding: 100px 20px 40px; }
@@ -561,8 +482,8 @@
   }
 </style>
 </head>
-<body>
 
+<body>
 <nav>
   <div class="logo">
     <span class="logo-dot"></span>
@@ -582,7 +503,7 @@
     <h1>Perfect your <em>form</em>,<br>prevent injury</h1>
     <p>
       Record yourself performing exercises and get real-time form feedback.
-      Say “start camera”, “start recording”, or “stop listening”. You can also pick an exercise from the dropdown.
+      Voice commands: “start camera”, “start recording”, “record again”, “stop listening”.
     </p>
   </section>
 
@@ -593,14 +514,9 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
         Camera Feed
       </div>
+
       <div class="video-container">
         <video id="cameraFeed" autoplay muted playsinline></video>
-
-        <!-- NEW: Countdown Overlay -->
-        <div class="countdown-overlay" id="countdownOverlay" aria-hidden="true">
-          <div class="countdown-number" id="countdownNumber">3</div>
-          <div class="countdown-sub">Recording starts in…</div>
-        </div>
 
         <div class="video-placeholder" id="videoPlaceholder">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
@@ -610,7 +526,10 @@
         <div class="recording-indicator" id="recIndicator">
           <span class="rec-dot"></span> REC
         </div>
+
         <div class="timer" id="timer">00:00</div>
+
+        <div class="countdown-overlay" id="countdownOverlay"></div>
 
         <div class="camera-overlay" id="cameraOverlay">
           <button class="btn btn-danger btn-icon" id="btnRecord" title="Start/Stop Recording" onclick="toggleRecording()">
@@ -630,13 +549,11 @@
           Flip
         </button>
 
-        <!-- NEW: Record Again -->
-        <button class="btn btn-ghost" id="btnRecordAgain" onclick="recordAgain()" style="display:none">
+        <button class="btn btn-ghost" id="btnRecordAgain" onclick="recordAgainAndStart()" style="display:none">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 12a9 9 0 0 1 15.36-6.36L21 8"/>
-            <path d="M21 3v5h-5"/>
-            <path d="M21 12a9 9 0 0 1-15.36 6.36L3 16"/>
-            <path d="M3 21v-5h5"/>
+            <path d="M1 4v6h6"/><path d="M23 20v-6h-6"/>
+            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10"/>
+            <path d="M22 14l-4.64 4.36A9 9 0 0 1 3.51 15"/>
           </svg>
           Record Again
         </button>
@@ -658,22 +575,8 @@
       </div>
 
       <p style="font-size:0.78rem;color:var(--text-dim);text-align:center;margin-top:8px;">
-        Try:
-        <span style="color:var(--text);">"start camera"</span>,
-        <span style="color:var(--text);">"start recording"</span>,
-        <span style="color:var(--text);">"record again"</span>,
-        <span style="color:var(--text);">"stop listening"</span>
+        Try: <span style="color:var(--text);">"record again"</span> or <span style="color:var(--text);">"start recording again"</span>
       </p>
-
-      <!-- NEW: Dropdown for Squat + Lunge -->
-      <div class="field">
-        <label class="field-label" for="exerciseSelect">Exercise</label>
-        <select class="select" id="exerciseSelect" onchange="onExerciseSelectChange()">
-          <option value="">Select exercise…</option>
-          <option value="squat">Squat</option>
-          <option value="lunge">Lunge</option>
-        </select>
-      </div>
     </div>
 
     <!-- TRANSCRIPT CARD -->
@@ -682,10 +585,12 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         Speech Transcript
       </div>
+
       <div class="transcript-box" id="transcriptBox">
         <span class="transcript-empty" id="transcriptEmpty">Your speech will appear here in real time…</span>
         <span class="transcript-text" id="transcriptText"></span>
       </div>
+
       <div class="exercise-detected" id="exerciseDetected">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
         <span>Exercise detected: <span class="exercise-name" id="exerciseName"></span></span>
@@ -693,20 +598,10 @@
     </div>
   </div>
 
-  <!-- STATUS BAR -->
   <div class="status-bar">
-    <div class="status-item">
-      <span class="status-dot" id="statusCamera"></span>
-      Camera
-    </div>
-    <div class="status-item">
-      <span class="status-dot" id="statusMic"></span>
-      Microphone
-    </div>
-    <div class="status-item">
-      <span class="status-dot" id="statusRec"></span>
-      Recording
-    </div>
+    <div class="status-item"><span class="status-dot" id="statusCamera"></span>Camera</div>
+    <div class="status-item"><span class="status-dot" id="statusMic"></span>Microphone</div>
+    <div class="status-item"><span class="status-dot" id="statusRec"></span>Recording</div>
   </div>
 </main>
 
@@ -724,11 +619,6 @@
   let finalTranscript = '';
   let facingMode = 'user';
 
-  // Countdown state (NEW)
-  let countdownActive = false;
-  let countdownInterval = null;
-  let countdownValue = 3;
-
   // App-level state
   let appState = {
     exercise: null,
@@ -736,7 +626,7 @@
     recordingOn: false,
   };
 
-  // ===== "ACTION SURFACE" =====
+  // ===== ACTION SURFACE =====
   const ACTIONS = {
     SET_EXERCISE: "set_exercise",
     START_CAMERA: "start_camera",
@@ -749,7 +639,7 @@
     SPEAK: "speak",
   };
 
-  // ===== KNOWN EXERCISES (keep full list for voice detection) =====
+  // ===== KNOWN EXERCISES =====
   const exercises = [
     'squat', 'squats', 'lunge', 'lunges', 'deadlift', 'deadlifts',
     'shoulder press', 'overhead press', 'push up', 'push ups', 'pushup', 'pushups',
@@ -762,36 +652,6 @@
     'quad set', 'bridge', 'bridges', 'side lying hip abduction'
   ];
 
-  // ===== Helpers =====
-  function canonicalExercise(ex) {
-    if (!ex) return null;
-    const e = ex.toLowerCase().trim();
-    if (e === "squats") return "squat";
-    if (e === "lunges") return "lunge";
-    return e;
-  }
-
-  function prettyExercise(ex) {
-    return ex.split(" ").map(w => w ? (w[0].toUpperCase() + w.slice(1)) : w).join(" ");
-  }
-
-  function setExerciseUI(ex) {
-    const canonical = canonicalExercise(ex);
-    appState.exercise = canonical;
-
-    const detected = document.getElementById('exerciseDetected');
-    const name = document.getElementById('exerciseName');
-    name.textContent = prettyExercise(canonical);
-    detected.classList.add('active');
-
-    // Sync dropdown if it has the exercise (Squat/Lunge only)
-    const sel = document.getElementById('exerciseSelect');
-    if (sel) {
-      if (canonical === "squat" || canonical === "lunge") sel.value = canonical;
-      else sel.value = ""; // keep dropdown clean if voice picks other exercises
-    }
-  }
-
   // ===== CAMERA =====
   async function toggleCamera() {
     const btn = document.getElementById('btnStartCamera');
@@ -803,8 +663,12 @@
     const recordAgainBtn = document.getElementById('btnRecordAgain');
 
     if (cameraStream) {
-      // stop any countdown too
-      cancelCountdown();
+      // cleanup preview url if any
+      if (window.lastRecordingUrl) {
+        URL.revokeObjectURL(window.lastRecordingUrl);
+        window.lastRecordingUrl = null;
+      }
+      window.lastRecordingBlob = null;
 
       cameraStream.getTracks().forEach(t => t.stop());
       cameraStream = null;
@@ -819,7 +683,7 @@
       btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg> Start Camera`;
       statusDot.classList.remove('on');
 
-      if (isRecording) stopRecording();
+      if (isRecording) stopRecordingUI();
       return;
     }
 
@@ -832,14 +696,20 @@
       appState.cameraOn = true;
 
       video.srcObject = cameraStream;
+      video.controls = false;
+      video.loop = false;
+      video.muted = true;
+      video.playsInline = true;
       video.style.display = 'block';
       placeholder.style.display = 'none';
       overlay.classList.add('active');
       flipBtn.style.display = '';
-      recordAgainBtn.style.display = ''; // NEW
+      recordAgainBtn.style.display = 'none';
 
       btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Stop Camera`;
       statusDot.classList.add('on');
+
+      video.play().catch(() => {});
     } catch (err) {
       alert('Could not access camera. Please allow camera permissions.');
     }
@@ -855,99 +725,109 @@
     }
   }
 
-  // ===== RECORDING (with 3-2-1 countdown) =====
-  function toggleRecording() {
-    // If countdown is running, treat "toggle" as cancel/stop.
-    if (countdownActive && !isRecording) {
-      cancelCountdown();
-      speak("Cancelled.");
-      return;
-    }
-
-    if (!isRecording) startRecordingWithCountdown();
-    else stopRecording();
-  }
-
-  function recordAgain() {
-    if (!cameraStream) {
-      speak("Start the camera first.");
-      return;
-    }
-    if (countdownActive || isRecording) return;
-    startRecordingWithCountdown();
-  }
-
-  function startRecordingWithCountdown() {
-    if (!cameraStream || isRecording || countdownActive) return;
-
-    countdownActive = true;
-    countdownValue = 3;
-
+  // ===== COUNTDOWN =====
+  function startCountdown(secondsToCount = 3) {
     const overlay = document.getElementById('countdownOverlay');
-    const number = document.getElementById('countdownNumber');
+    const recIndicator = document.getElementById('recIndicator');
+
+    recIndicator.classList.remove('active');
     overlay.classList.add('active');
-    number.textContent = String(countdownValue);
 
-    // disable record-again while counting down
-    const recordAgainBtn = document.getElementById('btnRecordAgain');
-    recordAgainBtn.disabled = true;
-    recordAgainBtn.style.opacity = "0.6";
+    return new Promise((resolve) => {
+      let remaining = secondsToCount;
 
-    countdownInterval = setInterval(() => {
-      countdownValue -= 1;
-      if (countdownValue <= 0) {
-        clearInterval(countdownInterval);
-        countdownInterval = null;
-        overlay.classList.remove('active');
-        countdownActive = false;
+      const tick = () => {
+        overlay.textContent = remaining;
 
-        recordAgainBtn.disabled = false;
-        recordAgainBtn.style.opacity = "1";
+        overlay.classList.remove('pop');
+        void overlay.offsetWidth;
+        overlay.classList.add('pop');
 
-        startRecording(); // actual record starts AFTER 3-2-1
-      } else {
-        number.textContent = String(countdownValue);
-      }
-    }, 1000);
+        if (remaining === 1) {
+          setTimeout(() => {
+            overlay.classList.remove('active');
+            overlay.classList.remove('pop');
+            overlay.textContent = '';
+            resolve();
+          }, 1000);
+          return;
+        }
+
+        remaining--;
+        setTimeout(tick, 1000);
+      };
+
+      tick();
+    });
   }
 
-  function cancelCountdown() {
-    if (!countdownActive) return;
-    countdownActive = false;
-    if (countdownInterval) clearInterval(countdownInterval);
-    countdownInterval = null;
-
-    const overlay = document.getElementById('countdownOverlay');
-    overlay.classList.remove('active');
-
-    const recordAgainBtn = document.getElementById('btnRecordAgain');
-    recordAgainBtn.disabled = false;
-    recordAgainBtn.style.opacity = "1";
-  }
-
-  function startRecording() {
+  // ===== RECORDING =====
+  async function toggleRecording() {
     const btn = document.getElementById('btnRecord');
     const indicator = document.getElementById('recIndicator');
     const timerEl = document.getElementById('timer');
     const statusDot = document.getElementById('statusRec');
 
-    if (!cameraStream || isRecording) return;
+    if (!cameraStream) return;
+
+    // STOP
+    if (isRecording) {
+      mediaRecorder.stop();
+      isRecording = false;
+      appState.recordingOn = false;
+
+      clearInterval(timerInterval);
+
+      btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="7"/></svg>`;
+      indicator.classList.remove('active');
+      timerEl.classList.remove('active');
+      statusDot.classList.remove('on');
+      return;
+    }
+
+    switchToLivePreview();
+
+    // START (countdown first)
+    btn.disabled = true;
+    await startCountdown(3);
+    btn.disabled = false;
 
     recordedChunks = [];
+
     try {
       mediaRecorder = new MediaRecorder(cameraStream, { mimeType: 'video/webm' });
     } catch {
       mediaRecorder = new MediaRecorder(cameraStream);
     }
 
-    mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
+    mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) recordedChunks.push(e.data);
+    };
+
     mediaRecorder.onstop = () => {
-      const blob = new Blob(recordedChunks, { type: 'video/webm' });
+      const video = document.getElementById('cameraFeed');
+      const overlay = document.getElementById('cameraOverlay');
+      const recordAgainBtn = document.getElementById('btnRecordAgain');
+
+      if (window.lastRecordingUrl) URL.revokeObjectURL(window.lastRecordingUrl);
+
+      const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType || 'video/webm' });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `formcheck-${Date.now()}.webm`;
-      a.click();
+
+      video.srcObject = null;
+      video.src = url;
+      video.controls = true;
+      video.loop = true;
+      video.muted = true;
+      video.playsInline = true;
+
+      video.play().catch(() => {});
+
+      window.lastRecordingBlob = blob;
+      window.lastRecordingUrl = url;
+
+      overlay.classList.remove('active');
+      recordAgainBtn.style.display = 'inline-flex';
     };
 
     mediaRecorder.start();
@@ -956,7 +836,10 @@
 
     seconds = 0;
     updateTimer();
-    timerInterval = setInterval(() => { seconds++; updateTimer(); }, 1000);
+    timerInterval = setInterval(() => {
+      seconds++;
+      updateTimer();
+    }, 1000);
 
     btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>`;
     indicator.classList.add('active');
@@ -964,18 +847,14 @@
     statusDot.classList.add('on');
   }
 
-  function stopRecording() {
+  function stopRecordingUI() {
     const btn = document.getElementById('btnRecord');
     const indicator = document.getElementById('recIndicator');
     const timerEl = document.getElementById('timer');
     const statusDot = document.getElementById('statusRec');
 
-    if (!isRecording) return;
-
-    mediaRecorder.stop();
     isRecording = false;
     appState.recordingOn = false;
-
     clearInterval(timerInterval);
 
     btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="7"/></svg>`;
@@ -984,22 +863,69 @@
     statusDot.classList.remove('on');
   }
 
+  function recordAgain() {
+    const video = document.getElementById('cameraFeed');
+    const overlay = document.getElementById('cameraOverlay');
+    const recordAgainBtn = document.getElementById('btnRecordAgain');
+
+    if (!cameraStream) return;
+
+    if (window.lastRecordingUrl) {
+      URL.revokeObjectURL(window.lastRecordingUrl);
+      window.lastRecordingUrl = null;
+    }
+    window.lastRecordingBlob = null;
+
+    video.pause();
+    video.removeAttribute('src');
+    video.load();
+
+    switchToLivePreview();
+
+    overlay.classList.add('active');
+    recordAgainBtn.style.display = 'none';
+
+    video.play().catch(() => {});
+  }
+
+  async function recordAgainAndStart() {
+    if (!cameraStream) return;
+
+    if (isRecording) {
+      await toggleRecording(); // stop
+      await new Promise(r => setTimeout(r, 150));
+    }
+
+    recordAgain();
+    await new Promise(r => requestAnimationFrame(() => r()));
+    toggleRecording();
+  }
+
   function updateTimer() {
     const m = String(Math.floor(seconds / 60)).padStart(2, '0');
     const s = String(seconds % 60).padStart(2, '0');
     document.getElementById('timer').textContent = `${m}:${s}`;
   }
 
-  // ===== DROPDOWN (NEW) =====
-  function onExerciseSelectChange() {
-    const sel = document.getElementById("exerciseSelect");
-    const val = sel.value;
-    if (!val) return;
+  function switchToLivePreview() {
+    const video = document.getElementById('cameraFeed');
+    if (!cameraStream) return;
 
-    runActions([
-      { type: ACTIONS.SET_EXERCISE, exercise: val },
-      { type: ACTIONS.SPEAK, text: `Okay. ${prettyExercise(val)} selected.` }
-    ]);
+    if (window.lastRecordingUrl) {
+      URL.revokeObjectURL(window.lastRecordingUrl);
+      window.lastRecordingUrl = null;
+    }
+    window.lastRecordingBlob = null;
+
+    video.pause();
+    video.removeAttribute('src');
+    video.load();
+
+    video.controls = false;
+    video.srcObject = cameraStream;
+    video.muted = true;
+    video.playsInline = true;
+    video.play().catch(() => {});
   }
 
   // ===== SPEECH RECOGNITION =====
@@ -1060,7 +986,7 @@
       micStatus.classList.add('active');
       statusDot.classList.add('on');
     } else {
-      isListening = false; // prevent auto-restart
+      isListening = false;
       recognition.stop();
       micBtn.classList.remove('listening');
       micStatus.textContent = 'Tap to start listening';
@@ -1076,7 +1002,7 @@
 
     if (!recognition || !isListening) return;
 
-    isListening = false;     // prevent auto-restart
+    isListening = false;
     recognition.stop();
 
     micBtn.classList.remove('listening');
@@ -1093,13 +1019,6 @@
   }
 
   // ===== VOICE COMMAND ROUTER =====
-  function findExercise(utterance) {
-    for (const ex of exercises) {
-      if (utterance.includes(ex)) return ex;
-    }
-    return null;
-  }
-
   function handleFinalUtterance(text) {
     const u = text.toLowerCase().trim();
 
@@ -1124,8 +1043,8 @@
       ]);
     }
 
-    // NEW: record again voice command
-    if (u.includes("record again")) {
+    // ✅ NEW: record again voice command
+    if (u.includes("record again") || u.includes("start recording again") || u.includes("redo")) {
       return runActions([
         { type: ACTIONS.RECORD_AGAIN },
         { type: ACTIONS.SPEAK, text: "Okay. Recording again." }
@@ -1154,19 +1073,33 @@
 
     const ex = findExercise(u);
     if (ex) {
-      const canonical = canonicalExercise(ex);
+      appState.exercise = ex;
       return runActions([
-        { type: ACTIONS.SET_EXERCISE, exercise: canonical },
-        { type: ACTIONS.SPEAK, text: `Okay. ${prettyExercise(canonical)} selected.` }
+        { type: ACTIONS.SET_EXERCISE, exercise: ex },
+        { type: ACTIONS.SPEAK, text: `Okay. ${prettyExercise(ex)} selected.` }
       ]);
     }
+  }
+
+  function findExercise(utterance) {
+    for (const ex of exercises) {
+      if (utterance.includes(ex)) return ex;
+    }
+    return null;
+  }
+
+  function prettyExercise(ex) {
+    return ex.split(" ").map(w => w ? (w[0].toUpperCase() + w.slice(1)) : w).join(" ");
   }
 
   function runActions(actions) {
     for (const a of actions) {
       switch (a.type) {
         case ACTIONS.SET_EXERCISE: {
-          setExerciseUI(a.exercise);
+          const detected = document.getElementById('exerciseDetected');
+          const name = document.getElementById('exerciseName');
+          name.textContent = prettyExercise(a.exercise);
+          detected.classList.add('active');
           break;
         }
         case ACTIONS.START_CAMERA: {
@@ -1178,17 +1111,15 @@
           break;
         }
         case ACTIONS.START_RECORDING: {
-          if (cameraStream && !isRecording && !countdownActive) startRecordingWithCountdown();
+          if (cameraStream && !isRecording) toggleRecording();
           break;
         }
         case ACTIONS.STOP_RECORDING: {
-          // If we’re counting down, cancel it; else stop recording.
-          if (countdownActive && !isRecording) cancelCountdown();
-          else if (isRecording) stopRecording();
+          if (isRecording) toggleRecording();
           break;
         }
         case ACTIONS.RECORD_AGAIN: {
-          recordAgain();
+          recordAgainAndStart();
           break;
         }
         case ACTIONS.STOP_LISTENING: {
@@ -1213,6 +1144,5 @@
     window.speechSynthesis.speak(u);
   }
 </script>
-
 </body>
 </html>
