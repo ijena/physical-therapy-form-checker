@@ -146,4 +146,17 @@ async function analyzeLastRecording() {
   return metrics;
 }
 
+window.formcheckAnalyze = async function () {
+  if (!window.lastRecordingBlob) return { error: "No video recorded." };
+
+  // make sure pose is ready
+  if (!poseLandmarker) await initPose();
+
+  const poseData = await extractPoseSeriesFromBlob(window.lastRecordingBlob, 12);
+  const metrics = computeSquatMetrics(poseData);
+
+  console.log("✅ formcheckAnalyze metrics:", metrics);
+  return metrics;
+};
+
 window.analyzeLastRecording = analyzeLastRecording;
