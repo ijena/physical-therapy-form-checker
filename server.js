@@ -49,3 +49,19 @@ app.listen(PORT, () => {
   console.log(`✅ FormCheck running at http://localhost:${PORT}`);
   console.log(`📁 Serving static files from: ${FRONTEND_DIR}`);
 });
+
+app.use(express.json({ limit: "50mb" }));
+
+app.post("/ollama/chat", async (req, res) => {
+  try {
+    const r = await fetch("http://127.0.0.1:11434/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(req.body),
+    });
+    const text = await r.text();
+    res.status(r.status).send(text);
+  } catch (e) {
+    res.status(500).json({ error: String(e) });
+  }
+});

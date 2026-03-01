@@ -561,6 +561,12 @@
   Analyze
 </button>
       </div>
+      <div class="card" style="margin-top:16px;">
+  <div class="card-label">Analysis</div>
+  <div class="transcript-box" id="resultsBox">
+    <span class="transcript-empty">Record a clip, then click Analyze…</span>
+  </div>
+</div>
     </div>
 
     <!-- VOICE CARD -->
@@ -911,7 +917,9 @@
     const s = String(seconds % 60).padStart(2, '0');
     document.getElementById('timer').textContent = `${m}:${s}`;
   }
-  async function analyzeClick() {
+ async function analyzeClick() {
+  let metrics = null;
+
   try {
     if (!window.lastRecordingBlob) {
       alert("Record a video first.");
@@ -923,13 +931,31 @@
     }
 
     speak("Analyzing.");
-    const metrics = await window.formcheckAnalyze();
+
+    metrics = await window.formcheckAnalyze();
     console.log("✅ METRICS:", metrics);
 
-    if (metrics?.error) speak("I couldn't detect pose clearly. Try better lighting and full body in frame.");
-    else speak("Analysis complete.");
+    if (metrics?.error) {
+      speak("I couldn't detect pose clearly. Try better lighting and full body in frame.");
+      showAnalysisInUI(metrics, { error: "Pose detection failed" });
+      return;
+    }
+
+    const raw = await callGemmaCoach(metrics);
+    console.log("✅ GEMMA RAW:", raw);
+
+
+    const agent = extractJsonObject(raw);
+if (!agent) { showAnalysisInUI(metrics, { error:"Gemma returned non-JSON", raw }); return; }
+
+showAnalysisInUI(metrics, agent);
+
+// coach voice
+speak(agent.say || agent.summary || agent.cues?.[0]?.cue || "Nice work. Let's make one small adjustment.");
+
   } catch (e) {
     console.error(e);
+    showAnalysisInUI(metrics || { error: "No metrics" }, { error: String(e) });
     alert("Analysis failed — check Console.");
   }
 }
@@ -954,6 +980,58 @@
     video.playsInline = true;
     video.play().catch(() => {});
   }
+  async function callGemmaCoach(metrics) {
+  const prompt = `
+You are FormCheck, a physical therapy form coach.
+Tone: supportive, specific, concise. No diagnosis. No medical claims.
+
+TASK:
+Given squat metrics, produce coach-like feedback for the *next set*.
+
+Return ONLY valid JSON (no markdown, no code fences).
+
+Schema:
+{
+  "score": 1-10,
+  "summary": "1 sentence overall assessment",
+  "top_issues": [
+    {"issue":"...", "evidence":"metric_name=value", "risk":"why it matters in form terms"}
+  ],
+  "cues": [
+    {"cue":"...", "why":"...", "try":"a concrete instruction"}
+  ],
+  "drill": {"name":"...", "how":"1-2 sentences", "sets_reps":"..."},
+  "next_step": "exactly what to do next for a better clip",
+  "say": "ONE short sentence to speak out loud first"
+}
+
+Use only these metrics:
+${JSON.stringify(metrics, null, 2)}
+IMPORTANT:
+- "cues" MUST be an array of objects with keys: cue, why, try.
+- Do NOT use strings for cues.
+Example:
+"cues":[{"cue":"Push knees out over toes","why":"Reduces inward collapse","try":"Think 'spread the floor' on the way down"}]
+Heuristics (use if relevant):
+- If valgus_pct_frames > 30: treat as knee valgus / knees collapsing inward.
+- If best_depth_delta indicates shallow depth: cue depth / hip hinge / ankle mobility.
+- If trunk_lean_peak_deg high: cue torso/bracing.
+- If frames_with_pose is low: ask to re-record with full body in frame + lighting.
+`.trim();
+
+  const res = await fetch("/ollama/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "gemma3:1b", // or gemma3:4b for nicer coaching
+      messages: [{ role: "user", content: prompt }],
+      stream: false
+    })
+  });
+
+  const data = await res.json();
+  return data.message.content; // string
+}
 
   // ===== SPEECH RECOGNITION =====
   function initSpeechRecognition() {
@@ -1170,6 +1248,85 @@
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(u);
   }
+  function showAnalysisInUI(metrics, agent) {
+  const box = document.getElementById("resultsBox");
+  if (!box) return;
+
+  if (agent?.error) {
+    box.innerHTML = `<div style="color:var(--red); font-weight:600;">${agent.error}</div>
+                     <pre style="white-space:pre-wrap;margin-top:10px;">${agent.raw || ""}</pre>`;
+    return;
+  }
+
+  const issues = (agent.top_issues || []).map(i =>
+    `• <b>${i.issue}</b> <span style="color:var(--text-dim)">(${i.evidence})</span><br><span style="color:var(--text-dim)">${i.risk}</span>`
+  ).join("<br><br>");
+
+  const cues = (agent.cues || []).map((c) => {
+  // If Gemma returns string cues
+  if (typeof c === "string") {
+    return `• <b>${c}</b>`;
+  }
+
+  // If Gemma returns structured cues
+  const cue = c?.cue ?? "";
+  const why = c?.why ?? "";
+  const tr = c?.try ?? "";
+
+  return `• <b>${cue}</b><br>
+          <span style="color:var(--text-dim)">${why}</span><br>
+          <span style="color:var(--accent)">Try:</span> ${tr}`;
+}).join("<br><br>");
+
+  box.innerHTML = `
+    <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:12px;">
+      <span style="color:var(--accent); font-weight:700;">Score: ${agent.score}/10</span>
+      <span style="color:var(--text-dim)">${agent.summary || ""}</span>
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <div style="color:var(--text-dim); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.08em;">Top issues</div>
+      <div style="margin-top:8px;">${issues || "—"}</div>
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <div style="color:var(--text-dim); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.08em;">Coaching cues</div>
+      <div style="margin-top:8px;">${cues || "—"}</div>
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <div style="color:var(--text-dim); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.08em;">Drill</div>
+      <div style="margin-top:8px;"><b>${agent.drill?.name || "—"}</b><br>
+        <span style="color:var(--text-dim)">${agent.drill?.how || ""}</span><br>
+        <span style="color:var(--accent)">${agent.drill?.sets_reps || ""}</span>
+      </div>
+    </div>
+
+    <div>
+      <div style="color:var(--text-dim); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.08em;">Next step</div>
+      <div style="margin-top:8px;">${agent.next_step || "—"}</div>
+    </div>
+  `;
+}
+function extractJsonObject(text) {
+  if (!text) return null;
+
+  const cleaned = text
+    .replace(/```json\s*/gi, "")
+    .replace(/```/g, "")
+    .trim();
+
+  try { return JSON.parse(cleaned); } catch {}
+
+  const start = cleaned.indexOf("{");
+  const end = cleaned.lastIndexOf("}");
+  if (start !== -1 && end !== -1 && end > start) {
+    const slice = cleaned.slice(start, end + 1);
+    try { return JSON.parse(slice); } catch {}
+  }
+  return null;
+}
+
 </script>
 <script type="module" src="./app.js"></script>
 </body>
