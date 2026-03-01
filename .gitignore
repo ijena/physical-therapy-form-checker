@@ -1,0 +1,13 @@
+node_modules/
+.DS_Store
+
+# recordings / temp
+*.webm
+*.mp4
+*.mov
+uploads/
+tmp/
+
+# optional: mediapipe binaries (recommended if you add a setup script)
+src/frontend/wasm/
+src/frontend/models/*.task
