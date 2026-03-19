@@ -18,6 +18,7 @@ const __dirname = normalize(join(__filename, '..'));
 
 // Directory that holds the frontend assets
 const FRONTEND_DIR = join(__dirname, 'src', 'frontend');
+//const FRONTEND_DIR = __dirname;
 
 // Basic content type map for common file extensions
 const MIME_TYPES = {

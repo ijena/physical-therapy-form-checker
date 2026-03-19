@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>FormCheck Video Test</title>
+  <style>
+    body { font-family: sans-serif; padding: 40px; background: #f5f5f5; }
+    h1 { margin-bottom: 20px; }
+    pre { background: #eef; padding: 20px; border-radius: 8px; white-space: pre-wrap; }
+    #analyzeBtn { margin-left: 10px; }
+  </style>
+</head>
+<body>
+  <h1>FormCheck Video Test</h1>
+  <p>Select a video file (WebM or MP4) and click <strong>Analyze</strong> to compute squat metrics using the MediaPipe Pose Landmarker.</p>
+  <input type="file" id="fileInput" accept="video/webm,video/mp4">
+  <button id="analyzeBtn" disabled>Analyze</button>
+  <pre id="output">No analysis run yet.</pre>
+
+  <!-- Import the FormCheck analyzer.  The relative path assumes this HTML
+       file is in your project root and app.js is in src/frontend. -->
+  <script type="module">
+    import './src/frontend/app.js';
+
+    const fileInput = document.getElementById('fileInput');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const output = document.getElementById('output');
+
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files && fileInput.files.length > 0) {
+        // Store the selected blob on the window so formcheckAnalyze() can find it.
+        window.lastRecordingBlob = fileInput.files[0];
+        output.textContent = `Selected file: ${fileInput.files[0].name}\nClick Analyze to run.`;
+        analyzeBtn.disabled = false;
+      } else {
+        window.lastRecordingBlob = null;
+        analyzeBtn.disabled = true;
+        output.textContent = 'No file selected.';
+      }
+    });
+
+    analyzeBtn.addEventListener('click', async () => {
+      output.textContent = 'Analyzing, please wait...';
+      analyzeBtn.disabled = true;
+      try {
+        const result = await window.formcheckAnalyze();
+        output.textContent = JSON.stringify(result, null, 2);
+      } catch (err) {
+        console.error(err);
+        output.textContent = 'Error: ' + err;
+      } finally {
+        analyzeBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

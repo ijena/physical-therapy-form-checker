@@ -19,6 +19,7 @@
     --red: #E6564A;
     --red-glow: rgba(230, 86, 74, 0.2);
     --amber: #E6B84A;
+    --amber-glow: rgba(230, 184, 74, 0.15);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -45,9 +46,7 @@
 
   nav {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
+    top: 0; left: 0; right: 0;
     z-index: 100;
     display: flex;
     align-items: center;
@@ -68,8 +67,7 @@
   }
 
   .logo-dot {
-    width: 8px;
-    height: 8px;
+    width: 8px; height: 8px;
     border-radius: 50%;
     background: var(--accent);
     box-shadow: 0 0 12px var(--accent-glow);
@@ -82,7 +80,6 @@
     font-size: 0.85rem;
     color: var(--text-dim);
   }
-
   .nav-links li { cursor: pointer; transition: color 0.2s; }
   .nav-links li:hover { color: var(--text); }
 
@@ -96,7 +93,7 @@
 
   .hero {
     text-align: center;
-    margin-bottom: 60px;
+    margin-bottom: 48px;
     animation: fadeUp 0.8s ease-out;
   }
 
@@ -116,8 +113,7 @@
   }
 
   .hero-badge .pulse {
-    width: 6px;
-    height: 6px;
+    width: 6px; height: 6px;
     border-radius: 50%;
     background: var(--accent);
     animation: pulse 2s infinite;
@@ -132,10 +128,7 @@
     margin-bottom: 16px;
   }
 
-  .hero h1 em {
-    font-style: italic;
-    color: var(--accent);
-  }
+  .hero h1 em { font-style: italic; color: var(--accent); }
 
   .hero p {
     font-size: 1.05rem;
@@ -145,12 +138,16 @@
     line-height: 1.6;
   }
 
-  .grid {
+  /* ====== MAIN LAYOUT ====== */
+  .layout {
     display: grid;
-    grid-template-columns: 1.4fr 1fr;
+    grid-template-columns: 1.3fr 1fr;
     gap: 20px;
     animation: fadeUp 0.8s ease-out 0.15s both;
   }
+
+  .left-col { display: flex; flex-direction: column; gap: 20px; }
+  .right-col { display: flex; flex-direction: column; gap: 20px; }
 
   .card {
     background: var(--surface);
@@ -161,7 +158,6 @@
     overflow: hidden;
     transition: border-color 0.3s;
   }
-
   .card:hover { border-color: #3A3D48; }
 
   .card-label {
@@ -174,22 +170,15 @@
     color: var(--text-dim);
     margin-bottom: 20px;
   }
-
   .card-label svg { opacity: 0.5; }
 
-  .video-card {
-    grid-row: span 2;
-    display: flex;
-    flex-direction: column;
-  }
-
+  /* ====== VIDEO CARD ====== */
   .video-container {
-    flex: 1;
     position: relative;
     background: var(--bg);
     border-radius: 14px;
     overflow: hidden;
-    min-height: 380px;
+    min-height: 360px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -197,8 +186,7 @@
   }
 
   #cameraFeed {
-    width: 100%;
-    height: 100%;
+    width: 100%; height: 100%;
     object-fit: cover;
     display: none;
   }
@@ -207,14 +195,11 @@
     text-align: center;
     color: var(--text-dim);
   }
-
   .video-placeholder svg {
-    width: 48px;
-    height: 48px;
+    width: 48px; height: 48px;
     opacity: 0.25;
     margin-bottom: 12px;
   }
-
   .video-placeholder p { font-size: 0.85rem; }
 
   .camera-overlay {
@@ -227,14 +212,12 @@
     align-items: center;
     z-index: 5;
   }
-
   .camera-overlay.active { display: flex; }
 
   .recording-indicator {
     display: none;
     position: absolute;
-    top: 16px;
-    left: 16px;
+    top: 16px; left: 16px;
     align-items: center;
     gap: 8px;
     background: rgba(230, 86, 74, 0.85);
@@ -247,12 +230,10 @@
     backdrop-filter: blur(10px);
     z-index: 5;
   }
-
   .recording-indicator.active { display: flex; }
 
   .rec-dot {
-    width: 7px;
-    height: 7px;
+    width: 7px; height: 7px;
     border-radius: 50%;
     background: #fff;
     animation: pulse 1s infinite;
@@ -261,8 +242,7 @@
   .timer {
     display: none;
     position: absolute;
-    top: 16px;
-    right: 16px;
+    top: 16px; right: 16px;
     font-variant-numeric: tabular-nums;
     font-size: 0.85rem;
     background: rgba(0,0,0,0.5);
@@ -271,10 +251,8 @@
     backdrop-filter: blur(10px);
     z-index: 5;
   }
-
   .timer.active { display: block; }
 
-  /* Countdown overlay */
   .countdown-overlay {
     position: absolute;
     inset: 0;
@@ -282,17 +260,14 @@
     align-items: center;
     justify-content: center;
     z-index: 20;
-
     font-family: 'DM Sans', sans-serif;
     font-size: clamp(72px, 10vw, 140px);
     font-weight: 700;
     color: #fff;
     text-shadow: 0 12px 35px rgba(0,0,0,0.6);
-
-    background: rgba(0, 0, 0, 0.25);
+    background: rgba(0,0,0,0.25);
     backdrop-filter: blur(2px);
   }
-
   .countdown-overlay.active { display: flex; }
   .countdown-overlay.pop { animation: pop 0.35s ease-out; }
 
@@ -302,6 +277,14 @@
     100% { transform: scale(1.0);  opacity: 1; }
   }
 
+  .video-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+
+  /* ====== BUTTONS ====== */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -317,8 +300,8 @@
     padding: 12px 24px;
     white-space: nowrap;
   }
-
   .btn svg { flex-shrink: 0; }
+  .btn:disabled { opacity: 0.4; pointer-events: none; }
 
   .btn-primary { background: var(--accent); color: var(--bg); }
   .btn-primary:hover { background: #5CF098; box-shadow: 0 0 30px var(--accent-glow); }
@@ -331,22 +314,310 @@
     color: var(--text);
     border: 1px solid var(--border);
   }
-
   .btn-ghost:hover { border-color: #4A4D58; }
 
   .btn-icon {
-    width: 46px;
-    height: 46px;
+    width: 46px; height: 46px;
     padding: 0;
     border-radius: 50%;
   }
 
-  .video-actions {
+  /* ====== ANALYSIS RESULTS ====== */
+  .results-card { flex: 1; }
+
+  /* Score ring */
+  .score-header {
     display: flex;
-    gap: 10px;
-    margin-top: 16px;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
   }
 
+  .score-ring-wrap { position: relative; flex-shrink: 0; }
+
+  .score-ring {
+    transform: rotate(-90deg);
+  }
+
+  .score-ring-bg {
+    fill: none;
+    stroke: var(--border);
+    stroke-width: 5;
+  }
+
+  .score-ring-fg {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-dasharray: 188;
+    stroke-dashoffset: 188;
+    transition: stroke-dashoffset 1s cubic-bezier(0.4,0,0.2,1), stroke 0.5s;
+  }
+
+  .score-number {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .score-number small {
+    font-size: 0.55rem;
+    color: var(--text-dim);
+    font-weight: 400;
+    margin-top: 2px;
+  }
+
+  .score-summary { flex: 1; }
+  .score-summary h3 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.2rem;
+    font-weight: 400;
+    margin-bottom: 6px;
+  }
+  .score-summary p { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; }
+
+  /* Metric pills */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .metric-pill {
+    border-radius: 14px;
+    padding: 14px 16px;
+    border: 1px solid transparent;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: all 0.3s;
+    animation: pillIn 0.4s ease-out both;
+  }
+
+  .metric-pill.pass {
+    background: rgba(74,230,138,0.06);
+    border-color: rgba(74,230,138,0.2);
+  }
+  .metric-pill.warn {
+    background: rgba(230,184,74,0.06);
+    border-color: rgba(230,184,74,0.2);
+  }
+  .metric-pill.fail {
+    background: rgba(230,86,74,0.06);
+    border-color: rgba(230,86,74,0.22);
+  }
+
+  .metric-icon {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 14px;
+  }
+  .metric-pill.pass .metric-icon { background: rgba(74,230,138,0.15); }
+  .metric-pill.warn .metric-icon { background: rgba(230,184,74,0.15); }
+  .metric-pill.fail .metric-icon { background: rgba(230,86,74,0.15); }
+
+  .metric-body { flex: 1; min-width: 0; }
+  .metric-name {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    margin-bottom: 2px;
+  }
+  .metric-value {
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+  .metric-pill.pass .metric-value { color: var(--accent); }
+  .metric-pill.warn .metric-value { color: var(--amber); }
+  .metric-pill.fail .metric-value { color: var(--red); }
+
+  .metric-note {
+    font-size: 0.73rem;
+    color: var(--text-dim);
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+
+  @keyframes pillIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Issues list */
+  .section-title {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .issues-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+
+  .issue-item {
+    padding: 14px 16px;
+    background: rgba(230,86,74,0.05);
+    border: 1px solid rgba(230,86,74,0.15);
+    border-radius: 12px;
+    animation: pillIn 0.4s ease-out both;
+  }
+
+  .issue-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .issue-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--red);
+    flex-shrink: 0;
+  }
+  .issue-name { font-weight: 600; font-size: 0.9rem; }
+  .issue-evidence {
+    margin-left: 14px;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    font-family: 'DM Mono', 'Courier New', monospace;
+    background: var(--bg);
+    padding: 2px 8px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+  .issue-risk {
+    margin-left: 14px;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* Cues */
+  .cues-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+
+  .cue-item {
+    padding: 14px 16px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    animation: pillIn 0.4s ease-out both;
+  }
+
+  .cue-main { font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; }
+  .cue-why { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 6px; }
+  .cue-try {
+    font-size: 0.8rem;
+    color: var(--accent);
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .cue-try::before { content: '→'; flex-shrink: 0; }
+
+  /* Drill */
+  .drill-box {
+    padding: 16px;
+    background: rgba(74,230,138,0.04);
+    border: 1px solid rgba(74,230,138,0.15);
+    border-radius: 12px;
+    margin-bottom: 14px;
+    animation: pillIn 0.4s ease-out both;
+  }
+  .drill-name { font-weight: 700; font-size: 0.95rem; color: var(--accent); margin-bottom: 6px; }
+  .drill-how { font-size: 0.82rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 8px; }
+  .drill-reps {
+    display: inline-block;
+    background: var(--accent-glow);
+    border: 1px solid var(--accent-dim);
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 0.78rem;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* Next step */
+  .next-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 0.85rem;
+    animation: pillIn 0.4s ease-out both;
+  }
+  .next-arrow {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--accent);
+    font-size: 14px;
+  }
+
+  /* Empty / loading states */
+  .results-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-dim);
+  }
+  .results-empty svg { opacity: 0.2; margin-bottom: 12px; }
+  .results-empty p { font-size: 0.85rem; }
+
+  .results-loading {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 50px 20px;
+    gap: 16px;
+  }
+  .results-loading.active { display: flex; }
+
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  .loading-text { font-size: 0.85rem; color: var(--text-dim); }
+  .loading-step { font-size: 0.75rem; color: var(--accent); margin-top: 4px; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ====== VOICE CARD ====== */
   .mic-area {
     display: flex;
     flex-direction: column;
@@ -356,8 +627,7 @@
   }
 
   .mic-btn {
-    width: 72px;
-    height: 72px;
+    width: 72px; height: 72px;
     border-radius: 50%;
     background: var(--surface-2);
     border: 2px solid var(--border);
@@ -367,11 +637,8 @@
     justify-content: center;
     cursor: pointer;
     transition: all 0.3s;
-    position: relative;
   }
-
   .mic-btn:hover { border-color: var(--accent); color: var(--accent); }
-
   .mic-btn.listening {
     border-color: var(--accent);
     color: var(--accent);
@@ -379,12 +646,7 @@
     animation: micPulse 1.5s ease-in-out infinite;
   }
 
-  .mic-status {
-    font-size: 0.8rem;
-    color: var(--text-dim);
-    min-height: 1.2em;
-  }
-
+  .mic-status { font-size: 0.8rem; color: var(--text-dim); min-height: 1.2em; }
   .mic-status.active { color: var(--accent); }
 
   .transcript-box {
@@ -392,19 +654,14 @@
     border: 1px solid var(--border);
     border-radius: 14px;
     padding: 20px;
-    min-height: 100px;
+    min-height: 80px;
     font-size: 0.9rem;
     line-height: 1.7;
     color: var(--text);
     position: relative;
   }
 
-  .transcript-empty {
-    color: var(--text-dim);
-    font-style: italic;
-    font-size: 0.85rem;
-  }
-
+  .transcript-empty { color: var(--text-dim); font-style: italic; font-size: 0.85rem; }
   .transcript-text .interim {
     color: var(--text-dim);
     border-right: 2px solid var(--accent);
@@ -421,14 +678,10 @@
     border-radius: 12px;
     font-size: 0.85rem;
   }
-
   .exercise-detected.active { display: flex; align-items: center; gap: 10px; }
+  .exercise-name { font-weight: 600; color: var(--accent); }
 
-  .exercise-name {
-    font-weight: 600;
-    color: var(--accent);
-  }
-
+  /* ====== STATUS BAR ====== */
   .status-bar {
     margin-top: 20px;
     display: flex;
@@ -442,48 +695,42 @@
     color: var(--text-dim);
     animation: fadeUp 0.8s ease-out 0.3s both;
   }
-
   .status-item { display: flex; align-items: center; gap: 8px; }
-
   .status-dot {
-    width: 6px;
-    height: 6px;
+    width: 6px; height: 6px;
     border-radius: 50%;
     background: var(--border);
     transition: background 0.3s, box-shadow 0.3s;
   }
-
   .status-dot.on { background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
 
+  /* ====== ANIMATIONS ====== */
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
   }
-
   @keyframes pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.4; }
   }
-
   @keyframes micPulse {
     0%, 100% { box-shadow: 0 0 0 8px var(--accent-glow); }
     50% { box-shadow: 0 0 0 16px rgba(74,230,138,0.06); }
   }
-
   @keyframes blink { 50% { border-color: transparent; } }
 
-  @media (max-width: 768px) {
+  /* ====== RESPONSIVE ====== */
+  @media (max-width: 900px) {
     nav { padding: 16px 20px; }
     main { padding: 100px 20px 40px; }
-    .grid { grid-template-columns: 1fr; }
-    .video-card { grid-row: span 1; }
+    .layout { grid-template-columns: 1fr; }
     .video-container { min-height: 280px; }
     .nav-links { display: none; }
   }
 </style>
 </head>
-
 <body>
+
 <nav>
   <div class="logo">
     <span class="logo-dot"></span>
@@ -501,108 +748,164 @@
   <section class="hero">
     <div class="hero-badge"><span class="pulse"></span> AI-Powered Analysis</div>
     <h1>Perfect your <em>form</em>,<br>prevent injury</h1>
-    <p>
-      Record yourself performing exercises and get real-time form feedback.
-      Voice commands: “start camera”, “start recording”, “record again”, “stop listening”.
-    </p>
+    <p>Record yourself performing exercises and get instant form feedback. Voice commands: "start camera", "start recording", "record again", "stop listening".</p>
   </section>
 
-  <div class="grid">
-    <!-- VIDEO CARD -->
-    <div class="card video-card">
-      <div class="card-label">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
-        Camera Feed
-      </div>
+  <div class="layout">
+    <!-- LEFT COLUMN -->
+    <div class="left-col">
 
-      <div class="video-container">
-        <video id="cameraFeed" autoplay muted playsinline></video>
-
-        <div class="video-placeholder" id="videoPlaceholder">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
-          <p>Camera feed will appear here</p>
+      <!-- VIDEO CARD -->
+      <div class="card">
+        <div class="card-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+          Camera Feed
         </div>
 
-        <div class="recording-indicator" id="recIndicator">
-          <span class="rec-dot"></span> REC
+        <div class="video-container">
+          <video id="cameraFeed" autoplay muted playsinline></video>
+          <div class="video-placeholder" id="videoPlaceholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+            <p>Camera feed will appear here</p>
+          </div>
+          <div class="recording-indicator" id="recIndicator"><span class="rec-dot"></span> REC</div>
+          <div class="timer" id="timer">00:00</div>
+          <div class="countdown-overlay" id="countdownOverlay"></div>
+          <div class="camera-overlay" id="cameraOverlay">
+            <button class="btn btn-danger btn-icon" id="btnRecord" title="Start/Stop Recording" onclick="toggleRecording()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="7"/></svg>
+            </button>
+          </div>
         </div>
 
-        <div class="timer" id="timer">00:00</div>
-
-        <div class="countdown-overlay" id="countdownOverlay"></div>
-
-        <div class="camera-overlay" id="cameraOverlay">
-          <button class="btn btn-danger btn-icon" id="btnRecord" title="Start/Stop Recording" onclick="toggleRecording()">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="7"/></svg>
+        <div class="video-actions">
+          <button class="btn btn-primary" id="btnStartCamera" onclick="toggleCamera()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+            Start Camera
+          </button>
+          <button class="btn btn-ghost" id="btnFlip" onclick="flipCamera()" style="display:none">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+            Flip
+          </button>
+          <button class="btn btn-ghost" id="btnRecordAgain" onclick="recordAgainAndStart()" style="display:none">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10"/><path d="M22 14l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+            Record Again
+          </button>
+          <button class="btn btn-primary" id="btnAnalyze" onclick="analyzeClick()" style="display:none">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Analyze
           </button>
         </div>
       </div>
 
-      <div class="video-actions">
-        <button class="btn btn-primary" id="btnStartCamera" onclick="toggleCamera()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
-          Start Camera
-        </button>
-
-        <button class="btn btn-ghost" id="btnFlip" onclick="flipCamera()" style="display:none">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
-          Flip
-        </button>
-        
-        <button class="btn btn-ghost" id="btnRecordAgain" onclick="recordAgainAndStart()" style="display:none">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M1 4v6h6"/><path d="M23 20v-6h-6"/>
-            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10"/>
-            <path d="M22 14l-4.64 4.36A9 9 0 0 1 3.51 15"/>
-          </svg>
-          Record Again
-        </button>
-        <button class="btn btn-primary" id="btnAnalyze" onclick="analyzeClick()" style="display:none">
-  Analyze
-</button>
+      <!-- VOICE CARD -->
+      <div class="card">
+        <div class="card-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          Voice Command
+        </div>
+        <div class="mic-area">
+          <button class="mic-btn" id="micBtn" onclick="toggleMic()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          </button>
+          <span class="mic-status" id="micStatus">Tap to start listening</span>
+        </div>
+        <p style="font-size:0.78rem;color:var(--text-dim);text-align:center;margin-top:8px;">
+          Try: <span style="color:var(--text);">"record again"</span> or <span style="color:var(--text);">"start recording again"</span>
+        </p>
+        <div style="margin-top:20px;">
+          <div class="card-label" style="margin-bottom:12px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Speech Transcript
+          </div>
+          <div class="transcript-box" id="transcriptBox">
+            <span class="transcript-empty" id="transcriptEmpty">Your speech will appear here…</span>
+            <span class="transcript-text" id="transcriptText"></span>
+          </div>
+          <div class="exercise-detected" id="exerciseDetected">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span>Exercise detected: <span class="exercise-name" id="exerciseName"></span></span>
+          </div>
+        </div>
       </div>
-      <div class="card" style="margin-top:16px;">
-  <div class="card-label">Analysis</div>
-  <div class="transcript-box" id="resultsBox">
-    <span class="transcript-empty">Record a clip, then click Analyze…</span>
-  </div>
-</div>
     </div>
 
-    <!-- VOICE CARD -->
-    <div class="card voice-card">
-      <div class="card-label">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-        Voice Command
-      </div>
+    <!-- RIGHT COLUMN: ANALYSIS -->
+    <div class="right-col">
+      <div class="card results-card" id="resultsCard">
+        <div class="card-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Form Analysis
+        </div>
 
-      <div class="mic-area">
-        <button class="mic-btn" id="micBtn" onclick="toggleMic()">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-        </button>
-        <span class="mic-status" id="micStatus">Tap to start listening</span>
-      </div>
+        <!-- Empty state -->
+        <div class="results-empty" id="resultsEmpty">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="display:block;margin:0 auto 12px"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <p>Record a clip, then click <strong>Analyze</strong> to see your squat breakdown</p>
+        </div>
 
-      <p style="font-size:0.78rem;color:var(--text-dim);text-align:center;margin-top:8px;">
-        Try: <span style="color:var(--text);">"record again"</span> or <span style="color:var(--text);">"start recording again"</span>
-      </p>
-    </div>
+        <!-- Loading state -->
+        <div class="results-loading" id="resultsLoading">
+          <div class="spinner"></div>
+          <div>
+            <div class="loading-text">Analyzing your squat…</div>
+            <div class="loading-step" id="loadingStep">Extracting pose landmarks</div>
+          </div>
+        </div>
 
-    <!-- TRANSCRIPT CARD -->
-    <div class="card transcript-card">
-      <div class="card-label">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        Speech Transcript
-      </div>
+        <!-- Results state -->
+        <div id="resultsContent" style="display:none">
 
-      <div class="transcript-box" id="transcriptBox">
-        <span class="transcript-empty" id="transcriptEmpty">Your speech will appear here in real time…</span>
-        <span class="transcript-text" id="transcriptText"></span>
-      </div>
+          <!-- Score header -->
+          <div class="score-header">
+            <div class="score-ring-wrap">
+              <svg class="score-ring" width="72" height="72" viewBox="0 0 72 72">
+                <circle class="score-ring-bg" cx="36" cy="36" r="30"/>
+                <circle class="score-ring-fg" id="scoreRingFg" cx="36" cy="36" r="30"/>
+              </svg>
+              <div class="score-number">
+                <span id="scoreNum">—</span>
+                <small>/10</small>
+              </div>
+            </div>
+            <div class="score-summary">
+              <h3 id="scoreSummary">—</h3>
+              <p id="scoreDetail"></p>
+            </div>
+          </div>
 
-      <div class="exercise-detected" id="exerciseDetected">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        <span>Exercise detected: <span class="exercise-name" id="exerciseName"></span></span>
+          <!-- Metric pills -->
+          <div class="section-title">Metrics</div>
+          <div class="metrics-grid" id="metricsGrid"></div>
+
+          <!-- Issues -->
+          <div id="issuesSection" style="display:none">
+            <div class="section-title">Issues Found</div>
+            <div class="issues-list" id="issuesList"></div>
+          </div>
+
+          <!-- Coaching cues -->
+          <div id="cuesSection" style="display:none">
+            <div class="section-title">Coaching Cues</div>
+            <div class="cues-list" id="cuesList"></div>
+          </div>
+
+          <!-- Drill -->
+          <div id="drillSection" style="display:none">
+            <div class="section-title">Corrective Drill</div>
+            <div class="drill-box" id="drillBox"></div>
+          </div>
+
+          <!-- Next step -->
+          <div id="nextSection" style="display:none">
+            <div class="section-title">Next Step</div>
+            <div class="next-step" id="nextStep">
+              <div class="next-arrow">→</div>
+              <span id="nextStepText"></span>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
   </div>
@@ -611,6 +914,7 @@
     <div class="status-item"><span class="status-dot" id="statusCamera"></span>Camera</div>
     <div class="status-item"><span class="status-dot" id="statusMic"></span>Microphone</div>
     <div class="status-item"><span class="status-dot" id="statusRec"></span>Recording</div>
+    <div class="status-item"><span class="status-dot" id="statusAnalyzing"></span>Analyzing</div>
   </div>
 </main>
 
@@ -622,33 +926,21 @@
   let recordedChunks = [];
   let timerInterval = null;
   let seconds = 0;
-
   let isListening = false;
   let recognition = null;
   let finalTranscript = '';
   let facingMode = 'user';
 
-  // App-level state
-  let appState = {
-    exercise: null,
-    cameraOn: false,
-    recordingOn: false,
-  };
+  let appState = { exercise: null, cameraOn: false, recordingOn: false };
+  window.appState = appState;
 
-  // ===== ACTION SURFACE =====
   const ACTIONS = {
-    SET_EXERCISE: "set_exercise",
-    START_CAMERA: "start_camera",
-    STOP_CAMERA: "stop_camera",
-    START_RECORDING: "start_recording",
-    STOP_RECORDING: "stop_recording",
-    RECORD_AGAIN: "record_again",
-    RESET_TRANSCRIPT: "reset_transcript",
-    STOP_LISTENING: "stop_listening",
-    SPEAK: "speak",
+    SET_EXERCISE: "set_exercise", START_CAMERA: "start_camera", STOP_CAMERA: "stop_camera",
+    START_RECORDING: "start_recording", STOP_RECORDING: "stop_recording",
+    RECORD_AGAIN: "record_again", RESET_TRANSCRIPT: "reset_transcript",
+    STOP_LISTENING: "stop_listening", SPEAK: "speak",
   };
 
-  // ===== KNOWN EXERCISES =====
   const exercises = [
     'squat', 'squats', 'lunge', 'lunges', 'deadlift', 'deadlifts',
     'shoulder press', 'overhead press', 'push up', 'push ups', 'pushup', 'pushups',
@@ -672,52 +964,36 @@
     const recordAgainBtn = document.getElementById('btnRecordAgain');
 
     if (cameraStream) {
-      // cleanup preview url if any
-      if (window.lastRecordingUrl) {
-        URL.revokeObjectURL(window.lastRecordingUrl);
-        window.lastRecordingUrl = null;
-      }
+      if (window.lastRecordingUrl) { URL.revokeObjectURL(window.lastRecordingUrl); window.lastRecordingUrl = null; }
       window.lastRecordingBlob = null;
-
       cameraStream.getTracks().forEach(t => t.stop());
       cameraStream = null;
       appState.cameraOn = false;
-
       video.style.display = 'none';
       placeholder.style.display = '';
       overlay.classList.remove('active');
       flipBtn.style.display = 'none';
       recordAgainBtn.style.display = 'none';
-
       btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg> Start Camera`;
       statusDot.classList.remove('on');
-
       if (isRecording) stopRecordingUI();
       return;
     }
 
     try {
       cameraStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode, width: { ideal: 1280 }, height: { ideal: 720 } },
-        audio: false
+        video: { facingMode, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false
       });
-
       appState.cameraOn = true;
-
       video.srcObject = cameraStream;
-      video.controls = false;
-      video.loop = false;
-      video.muted = true;
-      video.playsInline = true;
+      video.controls = false; video.loop = false; video.muted = true; video.playsInline = true;
       video.style.display = 'block';
       placeholder.style.display = 'none';
       overlay.classList.add('active');
       flipBtn.style.display = '';
       recordAgainBtn.style.display = 'none';
-
       btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Stop Camera`;
       statusDot.classList.add('on');
-
       video.play().catch(() => {});
     } catch (err) {
       alert('Could not access camera. Please allow camera permissions.');
@@ -726,46 +1002,28 @@
 
   async function flipCamera() {
     facingMode = facingMode === 'user' ? 'environment' : 'user';
-    if (cameraStream) {
-      cameraStream.getTracks().forEach(t => t.stop());
-      cameraStream = null;
-      appState.cameraOn = false;
-      await toggleCamera();
-    }
+    if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; appState.cameraOn = false; await toggleCamera(); }
   }
 
   // ===== COUNTDOWN =====
   function startCountdown(secondsToCount = 3) {
     const overlay = document.getElementById('countdownOverlay');
-    const recIndicator = document.getElementById('recIndicator');
-
-    recIndicator.classList.remove('active');
+    document.getElementById('recIndicator').classList.remove('active');
     overlay.classList.add('active');
-
     return new Promise((resolve) => {
       let remaining = secondsToCount;
-
       const tick = () => {
         overlay.textContent = remaining;
-
         overlay.classList.remove('pop');
         void overlay.offsetWidth;
         overlay.classList.add('pop');
-
         if (remaining === 1) {
-          setTimeout(() => {
-            overlay.classList.remove('active');
-            overlay.classList.remove('pop');
-            overlay.textContent = '';
-            resolve();
-          }, 1000);
+          setTimeout(() => { overlay.classList.remove('active', 'pop'); overlay.textContent = ''; resolve(); }, 1000);
           return;
         }
-
         remaining--;
         setTimeout(tick, 1000);
       };
-
       tick();
     });
   }
@@ -776,17 +1034,12 @@
     const indicator = document.getElementById('recIndicator');
     const timerEl = document.getElementById('timer');
     const statusDot = document.getElementById('statusRec');
-
     if (!cameraStream) return;
 
-    // STOP
     if (isRecording) {
       mediaRecorder.stop();
-      isRecording = false;
-      appState.recordingOn = false;
-
+      isRecording = false; appState.recordingOn = false;
       clearInterval(timerInterval);
-
       btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="7"/></svg>`;
       indicator.classList.remove('active');
       timerEl.classList.remove('active');
@@ -795,63 +1048,39 @@
     }
 
     switchToLivePreview();
-
-    // START (countdown first)
     btn.disabled = true;
     await startCountdown(3);
     btn.disabled = false;
 
     recordedChunks = [];
+    try { mediaRecorder = new MediaRecorder(cameraStream, { mimeType: 'video/webm' }); }
+    catch { mediaRecorder = new MediaRecorder(cameraStream); }
 
-    try {
-      mediaRecorder = new MediaRecorder(cameraStream, { mimeType: 'video/webm' });
-    } catch {
-      mediaRecorder = new MediaRecorder(cameraStream);
-    }
-
-    mediaRecorder.ondataavailable = (e) => {
-      if (e.data.size > 0) recordedChunks.push(e.data);
-    };
+    mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
 
     mediaRecorder.onstop = () => {
       const video = document.getElementById('cameraFeed');
       const overlay = document.getElementById('cameraOverlay');
       const recordAgainBtn = document.getElementById('btnRecordAgain');
-
       if (window.lastRecordingUrl) URL.revokeObjectURL(window.lastRecordingUrl);
 
       const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType || 'video/webm' });
       const url = URL.createObjectURL(blob);
-
       video.srcObject = null;
       video.src = url;
-      video.controls = true;
-      video.loop = true;
-      video.muted = true;
-      video.playsInline = true;
-
+      video.controls = true; video.loop = true; video.muted = true; video.playsInline = true;
       video.play().catch(() => {});
-
       window.lastRecordingBlob = blob;
       window.lastRecordingUrl = url;
-
       overlay.classList.remove('active');
       recordAgainBtn.style.display = 'inline-flex';
-            document.getElementById("btnAnalyze").style.display = "inline-flex";
-
+      document.getElementById("btnAnalyze").style.display = "inline-flex";
     };
 
     mediaRecorder.start();
-    isRecording = true;
-    appState.recordingOn = true;
-
-    seconds = 0;
-    updateTimer();
-    timerInterval = setInterval(() => {
-      seconds++;
-      updateTimer();
-    }, 1000);
-
+    isRecording = true; appState.recordingOn = true;
+    seconds = 0; updateTimer();
+    timerInterval = setInterval(() => { seconds++; updateTimer(); }, 1000);
     btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>`;
     indicator.classList.add('active');
     timerEl.classList.add('active');
@@ -859,54 +1088,29 @@
   }
 
   function stopRecordingUI() {
-    const btn = document.getElementById('btnRecord');
-    const indicator = document.getElementById('recIndicator');
-    const timerEl = document.getElementById('timer');
-    const statusDot = document.getElementById('statusRec');
-
-    isRecording = false;
-    appState.recordingOn = false;
-    clearInterval(timerInterval);
-
-    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="7"/></svg>`;
-    indicator.classList.remove('active');
-    timerEl.classList.remove('active');
-    statusDot.classList.remove('on');
+    isRecording = false; appState.recordingOn = false; clearInterval(timerInterval);
+    document.getElementById('btnRecord').innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="7"/></svg>`;
+    document.getElementById('recIndicator').classList.remove('active');
+    document.getElementById('timer').classList.remove('active');
+    document.getElementById('statusRec').classList.remove('on');
   }
 
   function recordAgain() {
     const video = document.getElementById('cameraFeed');
-    const overlay = document.getElementById('cameraOverlay');
-    const recordAgainBtn = document.getElementById('btnRecordAgain');
-
     if (!cameraStream) return;
-
-    if (window.lastRecordingUrl) {
-      URL.revokeObjectURL(window.lastRecordingUrl);
-      window.lastRecordingUrl = null;
-    }
+    if (window.lastRecordingUrl) { URL.revokeObjectURL(window.lastRecordingUrl); window.lastRecordingUrl = null; }
     window.lastRecordingBlob = null;
-
-    video.pause();
-    video.removeAttribute('src');
-    video.load();
-
+    video.pause(); video.removeAttribute('src'); video.load();
     switchToLivePreview();
-
-    overlay.classList.add('active');
-    recordAgainBtn.style.display = 'none';
+    document.getElementById('cameraOverlay').classList.add('active');
+    document.getElementById('btnRecordAgain').style.display = 'none';
     document.getElementById("btnAnalyze").style.display = "none";
     video.play().catch(() => {});
   }
 
   async function recordAgainAndStart() {
     if (!cameraStream) return;
-
-    if (isRecording) {
-      await toggleRecording(); // stop
-      await new Promise(r => setTimeout(r, 150));
-    }
-
+    if (isRecording) { await toggleRecording(); await new Promise(r => setTimeout(r, 150)); }
     recordAgain();
     await new Promise(r => requestAnimationFrame(() => r()));
     toggleRecording();
@@ -917,76 +1121,269 @@
     const s = String(seconds % 60).padStart(2, '0');
     document.getElementById('timer').textContent = `${m}:${s}`;
   }
- async function analyzeClick() {
-  let metrics = null;
-
-  try {
-    if (!window.lastRecordingBlob) {
-      alert("Record a video first.");
-      return;
-    }
-    if (!window.formcheckAnalyze) {
-      alert("Analyzer not ready. Make sure app.js exposes window.formcheckAnalyze.");
-      return;
-    }
-
-    speak("Analyzing.");
-
-    metrics = await window.formcheckAnalyze();
-    console.log("✅ METRICS:", metrics);
-
-    if (metrics?.error) {
-      speak("I couldn't detect pose clearly. Try better lighting and full body in frame.");
-      showAnalysisInUI(metrics, { error: "Pose detection failed" });
-      return;
-    }
-
-    const raw = await callGemmaCoach(metrics);
-    console.log("✅ GEMMA RAW:", raw);
-
-
-    const agent = extractJsonObject(raw);
-if (!agent) { showAnalysisInUI(metrics, { error:"Gemma returned non-JSON", raw }); return; }
-
-showAnalysisInUI(metrics, agent);
-
-// coach voice
-speak(agent.say || agent.summary || agent.cues?.[0]?.cue || "Nice work. Let's make one small adjustment.");
-
-  } catch (e) {
-    console.error(e);
-    showAnalysisInUI(metrics || { error: "No metrics" }, { error: String(e) });
-    alert("Analysis failed — check Console.");
-  }
-}
 
   function switchToLivePreview() {
     const video = document.getElementById('cameraFeed');
     if (!cameraStream) return;
-
-    if (window.lastRecordingUrl) {
-      URL.revokeObjectURL(window.lastRecordingUrl);
-      window.lastRecordingUrl = null;
-    }
+    if (window.lastRecordingUrl) { URL.revokeObjectURL(window.lastRecordingUrl); window.lastRecordingUrl = null; }
     window.lastRecordingBlob = null;
     document.getElementById("btnAnalyze").style.display = "none";
-    video.pause();
-    video.removeAttribute('src');
-    video.load();
-
-    video.controls = false;
-    video.srcObject = cameraStream;
-    video.muted = true;
-    video.playsInline = true;
+    video.pause(); video.removeAttribute('src'); video.load();
+    video.controls = false; video.srcObject = cameraStream; video.muted = true; video.playsInline = true;
     video.play().catch(() => {});
   }
+
+  // ===== ANALYZE =====
+  async function waitForAnalyzer(timeoutMs = 15000) {
+    if (window.formcheckAnalyze) return true;
+    const start = Date.now();
+    return new Promise((resolve) => {
+      const interval = setInterval(() => {
+        if (window.formcheckAnalyze) { clearInterval(interval); resolve(true); }
+        else if (Date.now() - start > timeoutMs) { clearInterval(interval); resolve(false); }
+      }, 100);
+    });
+  }
+
+  async function analyzeClick() {
+    if (!window.lastRecordingBlob) { alert("Record a video first."); return; }
+
+    showResultsLoading();
+    setLoadingStep("Loading pose model…");
+
+    const ready = await waitForAnalyzer();
+    if (!ready) {
+      showResultsError("app.js failed to load. Check the browser console and make sure the server is running.");
+      return;
+    }
+
+    speak("Analyzing your squat.");
+
+    let metrics = null;
+    try {
+      setLoadingStep("Extracting pose landmarks…");
+      metrics = await window.formcheckAnalyze();
+      console.log("✅ METRICS:", metrics);
+
+      if (metrics?.error) {
+        speak("Couldn't detect pose clearly. Try better lighting and make sure your full body is in frame.");
+        showResultsError(metrics.error);
+        return;
+      }
+
+      setLoadingStep("Running AI coaching analysis…");
+      let agent = null;
+      try {
+        const raw = await callGemmaCoach(metrics);
+        console.log("✅ RAW:", raw);
+        agent = extractJsonObject(raw);
+      } catch (ollamaErr) {
+        console.warn("⚠️ Ollama unavailable:", ollamaErr);
+      }
+
+      // Always show metrics; use fallback if Ollama failed
+      if (!agent) agent = buildFallbackAgent(metrics);
+
+      showAnalysisInUI(metrics, agent);
+      speak(agent.say || agent.summary || "Here is your form breakdown.");
+
+    } catch (e) {
+      console.error(e);
+      showResultsError("Analysis failed: " + String(e));
+    }
+  }
+
+  function showResultsLoading() {
+    document.getElementById('resultsEmpty').style.display = 'none';
+    document.getElementById('resultsContent').style.display = 'none';
+    document.getElementById('resultsLoading').classList.add('active');
+    document.getElementById('statusAnalyzing').classList.add('on');
+  }
+
+  function setLoadingStep(text) {
+    const el = document.getElementById('loadingStep');
+    if (el) el.textContent = text;
+  }
+
+  function showResultsError(msg) {
+    document.getElementById('resultsLoading').classList.remove('active');
+    document.getElementById('statusAnalyzing').classList.remove('on');
+    document.getElementById('resultsContent').style.display = 'none';
+    const empty = document.getElementById('resultsEmpty');
+    empty.style.display = '';
+    empty.innerHTML = `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="1.5" style="display:block;margin:0 auto 12px;opacity:0.6"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><p style="color:var(--red)">${msg}</p>`;
+  }
+
+  // ===== SHOW ANALYSIS UI =====
+  function showAnalysisInUI(metrics, agent) {
+    document.getElementById('resultsLoading').classList.remove('active');
+    document.getElementById('statusAnalyzing').classList.remove('on');
+    document.getElementById('resultsEmpty').style.display = 'none';
+    document.getElementById('resultsContent').style.display = '';
+
+    const score = agent.score ?? 0;
+
+    // Score ring
+    const ring = document.getElementById('scoreRingFg');
+    const circumference = 188;
+    const dashOffset = circumference - (score / 10) * circumference;
+    ring.style.strokeDashoffset = dashOffset;
+
+    // Color ring based on score
+    if (score >= 7) ring.style.stroke = 'var(--accent)';
+    else if (score >= 4) ring.style.stroke = 'var(--amber)';
+    else ring.style.stroke = 'var(--red)';
+
+    document.getElementById('scoreNum').textContent = score;
+    document.getElementById('scoreSummary').textContent = agent.summary || '';
+    document.getElementById('scoreDetail').textContent =
+      `${metrics.rep_count_est ?? '?'} rep${(metrics.rep_count_est ?? 0) !== 1 ? 's' : ''} detected · ${metrics.duration_s ?? '?'}s clip · ${metrics.frames_with_pose ?? '?'} frames analyzed`;
+
+    // Build metric pills
+    buildMetricPills(metrics);
+
+    // Issues
+    const issues = agent.top_issues || [];
+    const issuesSection = document.getElementById('issuesSection');
+    const issuesList = document.getElementById('issuesList');
+    if (issues.length) {
+      issuesSection.style.display = '';
+      issuesList.innerHTML = issues.map((item, i) => `
+        <div class="issue-item" style="animation-delay:${i * 80}ms">
+          <div class="issue-top">
+            <span class="issue-dot"></span>
+            <span class="issue-name">${item.issue ?? ''}</span>
+            ${item.evidence ? `<span class="issue-evidence">${item.evidence}</span>` : ''}
+          </div>
+          ${item.risk ? `<div class="issue-risk">${item.risk}</div>` : ''}
+        </div>
+      `).join('');
+    } else {
+      issuesSection.style.display = 'none';
+    }
+
+    // Cues
+    const cues = agent.cues || [];
+    const cuesSection = document.getElementById('cuesSection');
+    const cuesList = document.getElementById('cuesList');
+    if (cues.length) {
+      cuesSection.style.display = '';
+      cuesList.innerHTML = cues.map((c, i) => {
+        if (typeof c === 'string') return `<div class="cue-item" style="animation-delay:${i*80}ms"><div class="cue-main">${c}</div></div>`;
+        return `
+          <div class="cue-item" style="animation-delay:${i*80}ms">
+            <div class="cue-main">${c.cue ?? ''}</div>
+            ${c.why ? `<div class="cue-why">${c.why}</div>` : ''}
+            ${c.try ? `<div class="cue-try">${c.try}</div>` : ''}
+          </div>`;
+      }).join('');
+    } else {
+      cuesSection.style.display = 'none';
+    }
+
+    // Drill
+    const drill = agent.drill;
+    const drillSection = document.getElementById('drillSection');
+    if (drill?.name) {
+      drillSection.style.display = '';
+      document.getElementById('drillBox').innerHTML = `
+        <div class="drill-name">${drill.name}</div>
+        ${drill.how ? `<div class="drill-how">${drill.how}</div>` : ''}
+        ${drill.sets_reps ? `<span class="drill-reps">${drill.sets_reps}</span>` : ''}
+      `;
+    } else {
+      drillSection.style.display = 'none';
+    }
+
+    // Next step
+    const nextSection = document.getElementById('nextSection');
+    if (agent.next_step) {
+      nextSection.style.display = '';
+      document.getElementById('nextStepText').textContent = agent.next_step;
+    } else {
+      nextSection.style.display = 'none';
+    }
+  }
+
+  function buildMetricPills(metrics) {
+    const grid = document.getElementById('metricsGrid');
+
+    // Determine pass/warn/fail for each metric with heuristics
+    const defs = [
+      {
+        key: 'trunk_lean_peak_deg',
+        label: 'Trunk Lean',
+        icon: '🧍',
+        format: v => `${v}°`,
+        status: v => v <= 20 ? 'pass' : v <= 35 ? 'warn' : 'fail',
+        note: v => v <= 20 ? 'Good upright torso' : v <= 35 ? 'Slight forward lean — brace more' : 'Excessive lean — check mobility',
+      },
+      {
+        key: 'valgus_pct_frames',
+        label: 'Knee Valgus',
+        icon: '🦵',
+        format: v => `${v}% frames`,
+        status: v => v <= 15 ? 'pass' : v <= 35 ? 'warn' : 'fail',
+        note: v => v <= 15 ? 'Knees tracking well' : v <= 35 ? 'Occasional inward collapse' : 'Knees caving — cue "spread the floor"',
+      },
+      {
+        key: 'best_depth_delta',
+        label: 'Squat Depth',
+        icon: '📐',
+        format: v => v.toFixed(3),
+        status: v => v >= 0.10 ? 'pass' : v >= 0.05 ? 'warn' : 'fail',
+        note: v => v >= 0.10 ? 'Good depth reached' : v >= 0.05 ? 'Slightly shallow — work on mobility' : 'Shallow squat — check ankle/hip mobility',
+      },
+      {
+        key: 'rep_count_est',
+        label: 'Reps Detected',
+        icon: '🔁',
+        format: v => `${v} rep${v !== 1 ? 's' : ''}`,
+        status: v => v >= 2 ? 'pass' : v === 1 ? 'warn' : 'fail',
+        note: v => v >= 2 ? 'Multiple reps captured' : v === 1 ? 'Only 1 rep — record more' : 'No reps detected — check camera angle',
+      },
+      {
+        key: 'frames_with_pose',
+        label: 'Pose Detection',
+        icon: '👁',
+        format: v => `${v} frames`,
+        status: v => v >= 30 ? 'pass' : v >= 10 ? 'warn' : 'fail',
+        note: v => v >= 30 ? 'Good visibility' : v >= 10 ? 'Partial detection — improve lighting' : 'Poor detection — full body in frame?',
+      },
+      {
+        key: 'duration_s',
+        label: 'Clip Length',
+        icon: '⏱',
+        format: v => `${v}s`,
+        status: v => v >= 5 ? 'pass' : v >= 2 ? 'warn' : 'fail',
+        note: v => v >= 5 ? 'Good clip length' : 'Short clip — record longer for accuracy',
+      },
+    ];
+
+    grid.innerHTML = defs.map((def, idx) => {
+      const val = metrics[def.key];
+      if (val === undefined || val === null) return '';
+      const st = def.status(val);
+      const emoji = st === 'pass' ? '✓' : st === 'warn' ? '!' : '✗';
+      return `
+        <div class="metric-pill ${st}" style="animation-delay:${idx * 60}ms">
+          <div class="metric-icon">${def.icon}</div>
+          <div class="metric-body">
+            <div class="metric-name">${def.label}</div>
+            <div class="metric-value">${def.format(val)} <span style="font-size:0.75em;font-weight:400;opacity:0.7">${emoji}</span></div>
+            <div class="metric-note">${def.note(val)}</div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // ===== GEMMA COACH =====
   async function callGemmaCoach(metrics) {
-  const prompt = `
+    const prompt = `
 You are FormCheck, a physical therapy form coach.
 Tone: supportive, specific, concise. No diagnosis. No medical claims.
 
-TASK:
-Given squat metrics, produce coach-like feedback for the *next set*.
+TASK: Given squat metrics, produce coach-like feedback for the *next set*.
 
 Return ONLY valid JSON (no markdown, no code fences).
 
@@ -1005,115 +1402,133 @@ Schema:
   "say": "ONE short sentence to speak out loud first"
 }
 
-Use only these metrics:
+Metrics:
 ${JSON.stringify(metrics, null, 2)}
-IMPORTANT:
-- "cues" MUST be an array of objects with keys: cue, why, try.
-- Do NOT use strings for cues.
-Example:
-"cues":[{"cue":"Push knees out over toes","why":"Reduces inward collapse","try":"Think 'spread the floor' on the way down"}]
-Heuristics (use if relevant):
-- If valgus_pct_frames > 30: treat as knee valgus / knees collapsing inward.
-- If best_depth_delta indicates shallow depth: cue depth / hip hinge / ankle mobility.
-- If trunk_lean_peak_deg high: cue torso/bracing.
-- If frames_with_pose is low: ask to re-record with full body in frame + lighting.
+
+Heuristics:
+- valgus_pct_frames > 30: knee valgus / knees collapsing inward.
+- best_depth_delta < 0.05: shallow depth, cue ankle/hip mobility.
+- trunk_lean_peak_deg > 35: excessive lean, cue bracing/torso.
+- frames_with_pose < 10: ask to re-record with full body in frame.
 `.trim();
 
-  const res = await fetch("/ollama/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "gemma3:1b", // or gemma3:4b for nicer coaching
-      messages: [{ role: "user", content: prompt }],
-      stream: false
-    })
-  });
+    const res = await fetch("/ollama/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "gemma3:1b",
+        messages: [{ role: "user", content: prompt }],
+        stream: false
+      })
+    });
 
-  const data = await res.json();
-  return data.message.content; // string
-}
+    if (!res.ok) throw new Error(`Ollama HTTP ${res.status}`);
+    const data = await res.json();
+    if (!data?.message?.content) throw new Error("Ollama response missing message.content");
+    return data.message.content;
+  }
+
+  // Rule-based fallback — used when Ollama is not running
+  function buildFallbackAgent(m) {
+    const issues = [];
+    const cues = [];
+
+    if (m.valgus_pct_frames > 30) {
+      issues.push({ issue: "Knee valgus (knees caving in)", evidence: `valgus_pct_frames=${m.valgus_pct_frames}%`, risk: "Increases stress on knee ligaments and reduces force transfer." });
+      cues.push({ cue: "Push knees out over toes", why: "Prevents inward collapse under load", try: "Think 'spread the floor' — push feet apart as you descend." });
+    }
+    if (m.trunk_lean_peak_deg > 35) {
+      issues.push({ issue: "Excessive trunk lean", evidence: `trunk_lean_peak_deg=${m.trunk_lean_peak_deg}°`, risk: "Shifts load onto lower back instead of legs." });
+      cues.push({ cue: "Keep chest tall", why: "Maintains load over mid-foot", try: "Pick a spot on the wall at eye level and keep your eyes on it throughout the squat." });
+    }
+    if (m.best_depth_delta < 0.05) {
+      issues.push({ issue: "Shallow squat depth", evidence: `best_depth_delta=${m.best_depth_delta}`, risk: "Reduces glute and quad engagement." });
+      cues.push({ cue: "Sit deeper into the squat", why: "Full depth activates more muscle", try: "Aim to get hips below knee level. Place a box behind you and lightly tap it." });
+    }
+    if (m.frames_with_pose < 15) {
+      issues.push({ issue: "Low pose detection quality", evidence: `frames_with_pose=${m.frames_with_pose}`, risk: "Metrics may be inaccurate — move camera back for full body view." });
+    }
+
+    const score = Math.max(1, Math.min(10,
+      10
+      - (m.valgus_pct_frames > 30 ? 2 : m.valgus_pct_frames > 15 ? 1 : 0)
+      - (m.trunk_lean_peak_deg > 35 ? 2 : m.trunk_lean_peak_deg > 20 ? 1 : 0)
+      - (m.best_depth_delta < 0.05 ? 2 : m.best_depth_delta < 0.10 ? 1 : 0)
+      - (m.frames_with_pose < 10 ? 2 : 0)
+    ));
+
+    const hasIssues = issues.length > 0;
+    return {
+      score,
+      summary: hasIssues ? `${issues.length} form issue${issues.length > 1 ? "s" : ""} detected — see cues below.` : "Good overall form — keep it up!",
+      top_issues: issues,
+      cues: cues.length ? cues : [{ cue: "Maintain consistent tempo", why: "Controls time under tension", try: "3 seconds down, 1 second pause, 2 seconds up." }],
+      drill: { name: "Bodyweight squat holds", how: "Descend to your deepest comfortable squat and hold for 3–5 seconds before standing.", sets_reps: "3 sets × 8 reps" },
+      next_step: "Re-record with Ollama running for full AI coaching, or review the metrics above.",
+      say: hasIssues ? `I found ${issues.length} thing${issues.length > 1 ? "s" : ""} to work on.` : "Looking good — here are your metrics."
+    };
+  }
+
+  function extractJsonObject(text) {
+    if (!text) return null;
+    const cleaned = text.replace(/```json\s*/gi, "").replace(/```/g, "").trim();
+    try { return JSON.parse(cleaned); } catch {}
+    const start = cleaned.indexOf("{");
+    const end = cleaned.lastIndexOf("}");
+    if (start !== -1 && end !== -1 && end > start) {
+      try { return JSON.parse(cleaned.slice(start, end + 1)); } catch {}
+    }
+    return null;
+  }
 
   // ===== SPEECH RECOGNITION =====
   function initSpeechRecognition() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) return null;
-
     const recog = new SpeechRecognition();
-    recog.continuous = true;
-    recog.interimResults = true;
-    recog.lang = 'en-US';
-
+    recog.continuous = true; recog.interimResults = true; recog.lang = 'en-US';
     recog.onresult = (event) => {
       let interim = '';
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const t = event.results[i][0].transcript;
-
-        if (event.results[i].isFinal) {
-          finalTranscript += t + ' ';
-          handleFinalUtterance(t);
-        } else {
-          interim += t;
-        }
+        if (event.results[i].isFinal) { finalTranscript += t + ' '; handleFinalUtterance(t); }
+        else { interim += t; }
       }
       updateTranscript(finalTranscript, interim);
     };
-
-    recog.onerror = (event) => {
-      if (event.error === 'no-speech') return;
-      console.error('Speech error:', event.error);
-    };
-
-    recog.onend = () => {
-      if (isListening) recog.start();
-    };
-
+    recog.onerror = (event) => { if (event.error !== 'no-speech') console.error('Speech error:', event.error); };
+    recog.onend = () => { if (isListening) recog.start(); };
     return recog;
   }
 
   function toggleMic() {
+    if (!recognition) {
+      recognition = initSpeechRecognition();
+      if (!recognition) { alert('Speech recognition not supported. Try Chrome.'); return; }
+    }
     const micBtn = document.getElementById('micBtn');
     const micStatus = document.getElementById('micStatus');
     const statusDot = document.getElementById('statusMic');
-
-    if (!recognition) {
-      recognition = initSpeechRecognition();
-      if (!recognition) {
-        alert('Speech recognition is not supported in this browser. Try Chrome.');
-        return;
-      }
-    }
-
     if (!isListening) {
-      recognition.start();
-      isListening = true;
+      recognition.start(); isListening = true;
       micBtn.classList.add('listening');
-      micStatus.textContent = 'Listening…';
-      micStatus.classList.add('active');
+      micStatus.textContent = 'Listening…'; micStatus.classList.add('active');
       statusDot.classList.add('on');
     } else {
-      isListening = false;
-      recognition.stop();
+      isListening = false; recognition.stop();
       micBtn.classList.remove('listening');
-      micStatus.textContent = 'Tap to start listening';
-      micStatus.classList.remove('active');
+      micStatus.textContent = 'Tap to start listening'; micStatus.classList.remove('active');
       statusDot.classList.remove('on');
     }
   }
 
   function stopListening() {
-    const micBtn = document.getElementById('micBtn');
-    const micStatus = document.getElementById('micStatus');
-    const statusDot = document.getElementById('statusMic');
-
     if (!recognition || !isListening) return;
-
-    isListening = false;
-    recognition.stop();
-
-    micBtn.classList.remove('listening');
-    micStatus.textContent = 'Tap to start listening';
-    micStatus.classList.remove('active');
-    statusDot.classList.remove('on');
+    isListening = false; recognition.stop();
+    document.getElementById('micBtn').classList.remove('listening');
+    document.getElementById('micStatus').textContent = 'Tap to start listening';
+    document.getElementById('micStatus').classList.remove('active');
+    document.getElementById('statusMic').classList.remove('on');
   }
 
   function updateTranscript(final, interim) {
@@ -1123,216 +1538,61 @@ Heuristics (use if relevant):
     textEl.innerHTML = final + (interim ? `<span class="interim">${interim}</span>` : '');
   }
 
-  // ===== VOICE COMMAND ROUTER =====
   function handleFinalUtterance(text) {
     const u = text.toLowerCase().trim();
-
-    if (u.includes("stop listening")) {
-      return runActions([
-        { type: ACTIONS.SPEAK, text: "Okay. Stopping listening." },
-        { type: ACTIONS.STOP_LISTENING }
-      ]);
-    }
-
-    if (u.includes("start camera")) {
-      return runActions([
-        { type: ACTIONS.START_CAMERA },
-        { type: ACTIONS.SPEAK, text: "Starting camera." }
-      ]);
-    }
-
-    if (u.includes("stop camera")) {
-      return runActions([
-        { type: ACTIONS.STOP_CAMERA },
-        { type: ACTIONS.SPEAK, text: "Stopping camera." }
-      ]);
-    }
-
-    // ✅ NEW: record again voice command
-    if (u.includes("record again") || u.includes("start recording again") || u.includes("redo")) {
-      return runActions([
-        { type: ACTIONS.RECORD_AGAIN },
-        { type: ACTIONS.SPEAK, text: "Okay. Recording again." }
-      ]);
-    }
-
-    if (u.includes("start recording") || u === "record" || u.includes("record video")) {
-      return runActions([
-        { type: ACTIONS.START_RECORDING },
-        { type: ACTIONS.SPEAK, text: "Starting recording." }
-      ]);
-    }
-
-    if (u.includes("stop recording") || u === "stop") {
-      return runActions([
-        { type: ACTIONS.STOP_RECORDING },
-        { type: ACTIONS.SPEAK, text: "Recording stopped." }
-      ]);
-    }
-
-    if (u.includes("reset transcript") || u.includes("clear transcript")) {
-      finalTranscript = "";
-      updateTranscript("", "");
-      return runActions([{ type: ACTIONS.SPEAK, text: "Transcript cleared." }]);
-    }
-
-    const ex = findExercise(u);
+    if (u.includes("stop listening")) return runActions([{ type: ACTIONS.SPEAK, text: "Stopping." }, { type: ACTIONS.STOP_LISTENING }]);
+    if (u.includes("start camera")) return runActions([{ type: ACTIONS.START_CAMERA }, { type: ACTIONS.SPEAK, text: "Starting camera." }]);
+    if (u.includes("stop camera")) return runActions([{ type: ACTIONS.STOP_CAMERA }, { type: ACTIONS.SPEAK, text: "Stopping camera." }]);
+    if (u.includes("record again") || u.includes("start recording again") || u.includes("redo")) return runActions([{ type: ACTIONS.RECORD_AGAIN }, { type: ACTIONS.SPEAK, text: "Recording again." }]);
+    if (u.includes("start recording") || u === "record" || u.includes("record video")) return runActions([{ type: ACTIONS.START_RECORDING }, { type: ACTIONS.SPEAK, text: "Starting recording." }]);
+    if (u.includes("stop recording") || u === "stop") return runActions([{ type: ACTIONS.STOP_RECORDING }, { type: ACTIONS.SPEAK, text: "Recording stopped." }]);
+    const ex = exercises.find(e => u.includes(e));
     if (ex) {
       appState.exercise = ex;
-      return runActions([
-        { type: ACTIONS.SET_EXERCISE, exercise: ex },
-        { type: ACTIONS.SPEAK, text: `Okay. ${prettyExercise(ex)} selected.` }
-      ]);
+      return runActions([{ type: ACTIONS.SET_EXERCISE, exercise: ex }, { type: ACTIONS.SPEAK, text: `${prettyExercise(ex)} selected.` }]);
     }
   }
 
-  function findExercise(utterance) {
-    for (const ex of exercises) {
-      if (utterance.includes(ex)) return ex;
-    }
-    return null;
-  }
-
-  function prettyExercise(ex) {
-    return ex.split(" ").map(w => w ? (w[0].toUpperCase() + w.slice(1)) : w).join(" ");
-  }
+  function prettyExercise(ex) { return ex.split(" ").map(w => w ? w[0].toUpperCase() + w.slice(1) : w).join(" "); }
 
   function runActions(actions) {
     for (const a of actions) {
       switch (a.type) {
-        case ACTIONS.SET_EXERCISE: {
-          const detected = document.getElementById('exerciseDetected');
-          const name = document.getElementById('exerciseName');
-          name.textContent = prettyExercise(a.exercise);
-          detected.classList.add('active');
+        case ACTIONS.SET_EXERCISE:
+          document.getElementById('exerciseName').textContent = prettyExercise(a.exercise);
+          document.getElementById('exerciseDetected').classList.add('active');
           break;
-        }
-        case ACTIONS.START_CAMERA: {
-          if (!cameraStream) toggleCamera();
-          break;
-        }
-        case ACTIONS.STOP_CAMERA: {
-          if (cameraStream) toggleCamera();
-          break;
-        }
-        case ACTIONS.START_RECORDING: {
-          if (cameraStream && !isRecording) toggleRecording();
-          break;
-        }
-        case ACTIONS.STOP_RECORDING: {
-          if (isRecording) toggleRecording();
-          break;
-        }
-        case ACTIONS.RECORD_AGAIN: {
-          recordAgainAndStart();
-          break;
-        }
-        case ACTIONS.STOP_LISTENING: {
-          stopListening();
-          break;
-        }
-        case ACTIONS.SPEAK: {
-          speak(a.text);
-          break;
-        }
+        case ACTIONS.START_CAMERA: if (!cameraStream) toggleCamera(); break;
+        case ACTIONS.STOP_CAMERA: if (cameraStream) toggleCamera(); break;
+        case ACTIONS.START_RECORDING: if (cameraStream && !isRecording) toggleRecording(); break;
+        case ACTIONS.STOP_RECORDING: if (isRecording) toggleRecording(); break;
+        case ACTIONS.RECORD_AGAIN: recordAgainAndStart(); break;
+        case ACTIONS.STOP_LISTENING: stopListening(); break;
+        case ACTIONS.SPEAK: speak(a.text); break;
       }
     }
   }
 
-  // ===== TTS =====
   function speak(text) {
     if (!("speechSynthesis" in window)) return;
     const u = new SpeechSynthesisUtterance(text);
-    u.rate = 1.0;
-    u.pitch = 1.0;
+    u.rate = 1.0; u.pitch = 1.0;
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(u);
   }
-  function showAnalysisInUI(metrics, agent) {
-  const box = document.getElementById("resultsBox");
-  if (!box) return;
-
-  if (agent?.error) {
-    box.innerHTML = `<div style="color:var(--red); font-weight:600;">${agent.error}</div>
-                     <pre style="white-space:pre-wrap;margin-top:10px;">${agent.raw || ""}</pre>`;
-    return;
-  }
-
-  const issues = (agent.top_issues || []).map(i =>
-    `• <b>${i.issue}</b> <span style="color:var(--text-dim)">(${i.evidence})</span><br><span style="color:var(--text-dim)">${i.risk}</span>`
-  ).join("<br><br>");
-
-  const cues = (agent.cues || []).map((c) => {
-  // If Gemma returns string cues
-  if (typeof c === "string") {
-    return `• <b>${c}</b>`;
-  }
-
-  // If Gemma returns structured cues
-  const cue = c?.cue ?? "";
-  const why = c?.why ?? "";
-  const tr = c?.try ?? "";
-
-  return `• <b>${cue}</b><br>
-          <span style="color:var(--text-dim)">${why}</span><br>
-          <span style="color:var(--accent)">Try:</span> ${tr}`;
-}).join("<br><br>");
-
-  box.innerHTML = `
-    <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:12px;">
-      <span style="color:var(--accent); font-weight:700;">Score: ${agent.score}/10</span>
-      <span style="color:var(--text-dim)">${agent.summary || ""}</span>
-    </div>
-
-    <div style="margin-bottom:14px;">
-      <div style="color:var(--text-dim); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.08em;">Top issues</div>
-      <div style="margin-top:8px;">${issues || "—"}</div>
-    </div>
-
-    <div style="margin-bottom:14px;">
-      <div style="color:var(--text-dim); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.08em;">Coaching cues</div>
-      <div style="margin-top:8px;">${cues || "—"}</div>
-    </div>
-
-    <div style="margin-bottom:14px;">
-      <div style="color:var(--text-dim); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.08em;">Drill</div>
-      <div style="margin-top:8px;"><b>${agent.drill?.name || "—"}</b><br>
-        <span style="color:var(--text-dim)">${agent.drill?.how || ""}</span><br>
-        <span style="color:var(--accent)">${agent.drill?.sets_reps || ""}</span>
-      </div>
-    </div>
-
-    <div>
-      <div style="color:var(--text-dim); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.08em;">Next step</div>
-      <div style="margin-top:8px;">${agent.next_step || "—"}</div>
-    </div>
-  `;
-}
-function extractJsonObject(text) {
-  if (!text) return null;
-
-  const cleaned = text
-    .replace(/```json\s*/gi, "")
-    .replace(/```/g, "")
-    .trim();
-
-  try { return JSON.parse(cleaned); } catch {}
-
-  const start = cleaned.indexOf("{");
-  const end = cleaned.lastIndexOf("}");
-  if (start !== -1 && end !== -1 && end > start) {
-    const slice = cleaned.slice(start, end + 1);
-    try { return JSON.parse(slice); } catch {}
-  }
-  return null;
-}
-
 </script>
-    <!-- Load TensorFlow.js and the pose-detection model. These scripts
-         provide global `tf` and `poseDetection` namespaces used by app.js. -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.11.0/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl@4.11.0/dist/tf-backend-webgl.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@0.4.2/dist/pose-detection.min.js"></script>
-    <script type="module" src="./app.js"></script>
+
+<script>
+  // Catch any uncaught errors from the ES module (e.g. wrong WASM path, missing bundle)
+  window.addEventListener('error', (e) => {
+    if (e.filename && e.filename.includes('app.js')) {
+      console.error('❌ app.js failed to load:', e.message);
+    }
+  });
+  window.addEventListener('unhandledrejection', (e) => {
+    console.error('❌ Unhandled promise rejection (likely from app.js):', e.reason);
+  });
+</script>
+<script type="module" src="./app.js"></script>
 </body>
 </html>

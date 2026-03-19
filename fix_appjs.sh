@@ -1,3 +1,7 @@
+#!/bin/bash
+# Run this from your project root: bash fix_appjs.sh
+
+cat > src/frontend/app.js << 'APPJS'
 import { FilesetResolver, PoseLandmarker } from "./wasm/vision_bundle.js";
 
 console.log("✅ app.js loaded");
@@ -186,3 +190,9 @@ window.formcheckAnalyze = async function () {
 window.analyzeLastRecording = analyzeLastRecording;
 console.log("✅ app.js: window.formcheckAnalyze is ready");
 window.__appJsReady = true;
+APPJS
+
+echo "✅ src/frontend/app.js written successfully"
+echo ""
+echo "First line of file:"
+head -1 src/frontend/app.js
