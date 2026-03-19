@@ -1328,6 +1328,11 @@ function extractJsonObject(text) {
 }
 
 </script>
-<script type="module" src="./app.js"></script>
+    <!-- Load TensorFlow.js and the pose-detection model. These scripts
+         provide global `tf` and `poseDetection` namespaces used by app.js. -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.11.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl@4.11.0/dist/tf-backend-webgl.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@0.4.2/dist/pose-detection.min.js"></script>
+    <script type="module" src="./app.js"></script>
 </body>
 </html>
